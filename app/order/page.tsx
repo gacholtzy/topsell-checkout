@@ -303,14 +303,14 @@ const OrderPage = () => {
                 {/* Card Header: Invoice, Date, Status */}
                 <header className="flex flex-wrap items-start justify-between gap-3 border-b border-separator-border px-4 py-3.5 sm:px-6">
                     <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-1.5">
-                            <h3 className="break-all text-body-medium font-semibold tabular-nums text-text-primary" dir="ltr">
+                        <div className="flex items-start gap-1.5">
+                            <h3 className="min-w-0 break-all text-body-medium font-semibold tabular-nums text-text-primary" dir="ltr">
                                 {order.invoice}
                             </h3>
                             <button
                                 type="button"
                                 onClick={() => handleCopy(order.invoice, 'Nomor invoice')}
-                                className="inline-flex size-7 items-center justify-center rounded-md text-text-tertiary transition-colors hover:bg-background-secondary-hover hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus-ring"
+                                className="inline-flex size-6 shrink-0 items-center justify-center rounded-md text-text-tertiary transition-colors hover:bg-background-secondary-hover hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus-ring"
                                 aria-label={`Salin nomor invoice ${order.invoice}`}
                                 title="Salin invoice"
                             >
@@ -452,7 +452,7 @@ const OrderPage = () => {
                                     <>
                                         <span aria-hidden>·</span>
                                         <span className="inline-flex items-center gap-1.5">
-                                            <PaymentMark method={order.paymentMethod} className="h-4 w-7" />
+                                            <PaymentMark method={order.paymentMethod} className="h-6 w-10 p-1" />
                                             <span className="truncate">{order.paymentMethod.name}</span>
                                         </span>
                                     </>
@@ -480,7 +480,7 @@ const OrderPage = () => {
 
     if (!token) {
         return (
-            <div className="mx-auto max-w-3xl px-4 pb-16 pt-6 sm:px-6 sm:pt-10">
+            <div className="mx-auto max-w-[1200px] px-4 pb-16 pt-6 sm:px-6 sm:pt-10">
                 <Breadcrumb className="mb-6">
                     <BreadcrumbItem href="/cart">Keranjang</BreadcrumbItem>
                     <BreadcrumbItem current>Pesanan Saya</BreadcrumbItem>
@@ -515,7 +515,7 @@ const OrderPage = () => {
     }
 
     return (
-        <div className="mx-auto max-w-3xl px-4 pb-16 pt-6 sm:px-6 sm:pt-10">
+        <div className="mx-auto w-full min-w-0 max-w-[1200px] overflow-x-clip px-4 pb-16 pt-6 sm:px-6 sm:pt-10">
             <Breadcrumb className="mb-5">
                 <BreadcrumbItem href="/cart">Keranjang</BreadcrumbItem>
                 <BreadcrumbItem current>Pesanan Saya</BreadcrumbItem>
@@ -557,6 +557,7 @@ const OrderPage = () => {
 
             {/* Status Tabs */}
             <Tabs
+                className="min-w-0"
                 selectedKey={activeTab}
                 onSelectionChange={(key) => setActiveTab(key as OrderStatusKey)}
             >
