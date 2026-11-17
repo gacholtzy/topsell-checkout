@@ -42,7 +42,7 @@ export function Recommendations({
                 <Link
                   href={`https://topsellbelanja.com/product/${p.slug}`}
                   target="_blank"
-                  className="group flex h-full flex-col overflow-hidden rounded-lg border bg-card transition-colors hover:border-foreground/30"
+                  className="group flex h-full flex-col overflow-hidden rounded-3xl border border-border-button-default bg-background-full transition-colors hover:border-foreground/30"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img

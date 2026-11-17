@@ -309,9 +309,7 @@ const AddressModal = ({
                         </span>
                     </button>
                 </DialogTrigger>
-                <DialogContent
-                    className='max-h-[90dvh]'
-                >
+                <DialogContent>
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(handleSubmit)}>
                             <DialogHeader className='pb-6'>

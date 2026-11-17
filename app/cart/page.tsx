@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Recommendations } from "@/components/cart/recommendations";
+import { Checkbox } from "@/components/base/checkbox/checkbox";
+import { NumberField } from "@/components/base/number-field/number-field";
+import { Spinner } from "@/components/base/spinner/spinner";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/useAuthStore";
 import { useToast } from "@/hooks/use-toast";
@@ -391,7 +394,7 @@ export default function CartPage() {
       <>
         {authModal}
         <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3" role="status">
-          <span className="h-8 w-8 animate-spin rounded-full border-2 border-foreground border-t-transparent" aria-hidden="true" />
+          <Spinner size="lg" aria-hidden />
           <p className="text-sm text-muted-foreground">
             {processingPending ? "Menambahkan produk ke keranjang…" : "Memuat keranjang…"}
           </p>
@@ -406,7 +409,7 @@ export default function CartPage() {
         {authModal}
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
           <h1 className="mb-6 text-2xl font-extrabold tracking-tight sm:text-3xl">Keranjang</h1>
-          <div className="rounded-lg border bg-card px-6 py-12 text-center">
+          <div className="rounded-3xl border border-border-button-default bg-background-full px-6 py-12 text-center">
             <h2 className="text-lg font-bold">
               {isAuthenticated ? "Keranjang Anda masih kosong" : "Masuk untuk melihat keranjang"}
             </h2>
@@ -439,44 +442,35 @@ export default function CartPage() {
       {authModal}
       <div className="mx-auto max-w-6xl px-4 pb-32 pt-5 sm:px-6 sm:pt-8 lg:pb-12">
         <div className="mb-6 flex items-end justify-between gap-4">
-          <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
-            Keranjang <span className="text-lg font-semibold text-muted-foreground">({cart.items.length})</span>
+          <h1 className="text-title-1-semibold text-text-primary sm:text-display-4-semibold">
+            Keranjang <span className="text-headline-medium text-text-secondary">({cart.items.length})</span>
           </h1>
-          <Button variant="ghost" size="sm" onClick={handleClearCart} disabled={clearingCart} className="text-muted-foreground hover:text-destructive">
+          <Button variant="outline" size="sm" onClick={handleClearCart} disabled={clearingCart}>
             <Trash2Icon />
             {clearingCart ? "Mengosongkan…" : "Kosongkan"}
           </Button>
         </div>
 
         <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-10">
-          <div className="rounded-lg border bg-card">
-            <div className="flex items-center gap-3 border-b px-4 py-3 sm:px-6">
-              <input
-                type="checkbox"
-                id="select-all"
-                checked={selectAll}
-                onChange={toggleSelectAll}
-                className="h-5 w-5 cursor-pointer accent-primary"
-              />
-              <label htmlFor="select-all" className="cursor-pointer text-sm font-semibold">
+          <div className="rounded-3xl border border-border-button-default bg-background-full">
+            <div className="flex items-center gap-3 border-b border-border-button-default px-4 py-3 sm:px-6">
+              <Checkbox isSelected={selectAll} onChange={toggleSelectAll}>
                 Pilih semua
-              </label>
+              </Checkbox>
             </div>
 
-            <ul className="divide-y">
+            <ul className="divide-y divide-border-button-default">
               {cart.items.map((item) => {
                 const soldOut = item.stock <= 0;
                 const busy = updatingItem === item.id;
                 return (
                   <li key={item.id} className={`flex gap-3 px-4 py-5 sm:gap-4 sm:px-6 ${soldOut ? "bg-secondary/50" : ""}`}>
-                    <input
-                      type="checkbox"
-                      id={`item-${item.id}`}
+                    <Checkbox
                       aria-label={`Pilih ${item.name}`}
-                      checked={!!selectedItems[item.id]}
+                      isSelected={!!selectedItems[item.id]}
                       onChange={() => toggleItemSelection(item.id)}
-                      disabled={soldOut}
-                      className="mt-1 h-5 w-5 shrink-0 cursor-pointer accent-primary disabled:cursor-not-allowed disabled:opacity-40"
+                      isDisabled={soldOut}
+                      className="mt-1 shrink-0"
                     />
 
                     <div className={`relative h-20 w-20 shrink-0 sm:h-24 sm:w-24 ${soldOut ? "opacity-60" : ""}`}>
@@ -494,35 +488,24 @@ export default function CartPage() {
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <h2 className="text-sm font-semibold leading-snug sm:text-base">{item.name}</h2>
+                      <h2 className="text-body-semibold text-text-primary sm:text-headline-semibold">{item.name}</h2>
                       <p className={`mt-1 text-sm font-medium ${soldOut ? "text-destructive" : "text-muted-foreground"}`}>
                         {soldOut ? "Stok habis. Hapus dari keranjang atau tunggu restock." : `Stok tersedia: ${item.stock}`}
                       </p>
 
                       <div className="mt-3 flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
-                        <div className="flex items-center" role="group" aria-label={`Jumlah ${item.name}`}>
-                          <button
-                            type="button"
-                            aria-label="Kurangi jumlah"
-                            className="flex h-11 w-11 items-center justify-center rounded-l-lg border border-input bg-card transition-colors hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-40 md:h-10 md:w-10"
-                            onClick={() => handleUpdateQuantity(item.id, item.qty - 1)}
-                            disabled={!!updatingItem || soldOut || item.qty <= 1}
-                          >
-                            <MinusIcon className="h-4 w-4" />
-                          </button>
-                          <span className="flex h-11 w-12 items-center justify-center border-y border-input bg-card text-sm font-bold tabular-nums md:h-10" aria-live="polite">
-                            {item.qty}
-                          </span>
-                          <button
-                            type="button"
-                            aria-label="Tambah jumlah"
-                            className="flex h-11 w-11 items-center justify-center rounded-r-lg border border-input bg-card transition-colors hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-40 md:h-10 md:w-10"
-                            onClick={() => handleUpdateQuantity(item.id, item.qty + 1)}
-                            disabled={!!updatingItem || soldOut || item.qty >= item.stock}
-                          >
-                            <PlusIcon className="h-4 w-4" />
-                          </button>
-                        </div>
+                        <NumberField
+                          aria-label={`Jumlah ${item.name}`}
+                          value={item.qty}
+                          minValue={1}
+                          maxValue={Math.max(item.stock, item.qty, 1)}
+                          isDisabled={!!updatingItem || soldOut}
+                          onChange={(value) => {
+                            if (Number.isFinite(value) && value !== item.qty) handleUpdateQuantity(item.id, value);
+                          }}
+                          className="w-36"
+                          fieldClassName="min-h-11 md:min-h-9"
+                        />
 
                         <div className="text-right">
                           {item.regularPrice && parseFloat(item.regularPrice) > 0 && (
@@ -552,7 +535,7 @@ export default function CartPage() {
                           <Trash2Icon className="h-4 w-4" />
                           Hapus
                         </button>
-                        {busy && <span className="h-4 w-4 animate-spin rounded-full border-2 border-foreground border-t-transparent" role="status" aria-label="Memperbarui" />}
+                        {busy && <Spinner size="xs" aria-label="Memperbarui" />}
                       </div>
                     </div>
                   </li>
@@ -561,8 +544,8 @@ export default function CartPage() {
             </ul>
           </div>
 
-          <aside aria-label="Ringkasan keranjang" className="hidden rounded-lg border bg-card p-6 lg:sticky lg:top-6 lg:block">
-            <h2 className="text-base font-bold">Ringkasan</h2>
+          <aside aria-label="Ringkasan keranjang" className="hidden rounded-3xl border border-border-button-default bg-background-full p-6 lg:sticky lg:top-6 lg:block">
+            <h2 className="text-headline-semibold text-text-primary">Ringkasan</h2>
             <dl className="mt-4 space-y-2.5 text-sm">
               <div className="flex justify-between gap-4">
                 <dt className="text-muted-foreground">Barang dipilih</dt>
@@ -597,7 +580,7 @@ export default function CartPage() {
       </div>
 
       {/* Phone: total and the way forward stay in reach. */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t bg-card px-4 pb-safe pt-3 shadow-[0_-8px_24px_-12px_rgb(0_0_0/0.2)] lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border-button-default bg-background-full px-4 pb-safe pt-3 shadow-lg lg:hidden">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 pb-3 min-[400px]:flex-row min-[400px]:items-center min-[400px]:gap-4">
           <div className="min-w-0 flex-1">
             <p className="text-xs text-muted-foreground">{selectedCount} barang dipilih</p>

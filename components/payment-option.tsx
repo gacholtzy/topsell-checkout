@@ -91,7 +91,7 @@ const PaymentOption = () => {
                     <span className='shrink-0 text-sm font-semibold text-primary underline underline-offset-4'>{selectedPaymentMethod ? 'Ganti' : 'Pilih'}</span>
                 </Button>
                 {/* </Button> */}
-                <DialogContent className='max-h-[85dvh] max-w-md overflow-y-auto'>
+                <DialogContent>
                     <DialogHeader>
                         <DialogTitle className="text-center text-xl font-bold">
                             Pilih Metode Pembayaran

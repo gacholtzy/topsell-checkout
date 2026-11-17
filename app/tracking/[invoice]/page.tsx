@@ -141,7 +141,7 @@ const TrackingPage = () => {
                         )}
                     </div>
 
-                    <dl className="mt-6 divide-y rounded-lg border bg-card text-sm">
+                    <dl className="mt-6 divide-y rounded-3xl border border-border-button-default bg-background-full text-sm">
                         <div className="grid gap-1 p-4 sm:grid-cols-[9rem_1fr] sm:gap-4">
                             <dt className="text-muted-foreground">Kurir</dt>
                             <dd className="font-semibold">{[tracking.courierName, tracking.courierServiceName].filter(Boolean).join(' ') || '-'}</dd>

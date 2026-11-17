@@ -4,6 +4,8 @@ import ProductDetail from '../../components/product_detail'
 import ShippingOption from '../../components/shipping-option'
 import PaymentOption from '../../components/payment-option'
 import { CheckoutSection } from '../../components/checkout/section'
+import { Breadcrumb, BreadcrumbItem } from '@/components/base/breadcrumb/breadcrumb'
+import { Spinner } from '@/components/base/spinner/spinner'
 import { Button } from '../../components/ui/button'
 import { useAddress } from '../../context/address';
 import { useShipping } from '../../context/shipping'
@@ -305,15 +307,15 @@ const StorePage = () => {
     const confirmLabel = isLoading ? "Memproses…" : "Konfirmasi Pesanan"
 
     const confirmButton = () => (
-        <Button size="lg" className="w-full font-bold" onClick={handleConfirmOrder} disabled={!canConfirm}>
-            {isLoading && <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true" />}
+        <Button size="lg" className="w-full" onClick={handleConfirmOrder} disabled={!canConfirm}>
+            {isLoading && <Spinner size="xs" aria-hidden />}
             {confirmLabel}
         </Button>
     )
 
     const loadingRow = (
         <span className="inline-flex items-center gap-2">
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true" />
+            <Spinner size="xs" aria-hidden />
             Menghitung…
         </span>
     )
@@ -322,17 +324,15 @@ const StorePage = () => {
         <div className='mx-auto max-w-6xl px-4 pb-32 pt-5 sm:px-6 sm:pt-8 lg:pb-12'>
             <AuthModal open={showAuthModal} onAuthenticated={handleAuthenticated} onClose={() => setShowAuthModal(false)} />
 
-            <nav aria-label="Langkah belanja" className='mb-5 flex items-center gap-2 text-sm text-muted-foreground'>
-                <Link href="/cart" className='underline-offset-4 hover:text-foreground hover:underline'>Keranjang</Link>
-                <span aria-hidden="true">/</span>
-                <span aria-current="step" className='font-semibold text-foreground'>Checkout</span>
-                <span aria-hidden="true">/</span>
-                <span>Pembayaran</span>
-            </nav>
-            <h1 className='mb-6 text-2xl font-extrabold tracking-tight sm:text-3xl'>Checkout</h1>
+            <Breadcrumb aria-label="Langkah belanja" className="mb-4">
+                <BreadcrumbItem href="/cart">Keranjang</BreadcrumbItem>
+                <BreadcrumbItem current>Checkout</BreadcrumbItem>
+                <BreadcrumbItem>Pembayaran</BreadcrumbItem>
+            </Breadcrumb>
+            <h1 className='mb-6 text-title-1-semibold text-text-primary sm:text-display-4-semibold'>Checkout</h1>
 
             <div className='grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-10'>
-                <div className='divide-y rounded-lg border bg-card'>
+                <div className='divide-y divide-border-button-default rounded-3xl border border-border-button-default bg-background-full'>
                     <CheckoutSection step={1} title="Barang yang dibeli" done={totalQtyToCheckout > 0}>
                         <ProductDetail />
                     </CheckoutSection>
@@ -344,20 +344,20 @@ const StorePage = () => {
                     </CheckoutSection>
                 </div>
 
-                <aside aria-label="Ringkasan pesanan" className='rounded-lg border bg-card lg:sticky lg:top-20'>
+                <aside aria-label="Ringkasan pesanan" className='rounded-3xl border border-border-button-default bg-background-full lg:sticky lg:top-20'>
                     <div className='p-4 sm:p-6'>
                         <PickVoucher />
                     </div>
-                    <div className='space-y-3 border-t p-4 text-sm sm:p-6'>
-                        <h2 className='text-base font-bold'>Ringkasan</h2>
+                    <div className='space-y-3 border-t border-border-button-default p-4 text-body-regular sm:p-6'>
+                        <h2 className='text-headline-semibold text-text-primary'>Ringkasan</h2>
                         <dl className='space-y-2.5'>
                             <div className='flex justify-between gap-4'>
-                                <dt className='text-muted-foreground'>Harga ({totalQtyToCheckout} barang)</dt>
+                                <dt className='text-text-secondary'>Harga ({totalQtyToCheckout} barang)</dt>
                                 <dd className='font-medium tabular-nums'>{priceToIDR(totalPriceToCheckout || 0)}</dd>
                             </div>
                             {showShippingLine && (
                                 <div className='flex justify-between gap-4'>
-                                    <dt className='text-muted-foreground'>
+                                    <dt className='text-text-secondary'>
                                         Ongkos kirim
                                         {selectedShippingOption && (
                                             <span className='block text-xs'>
@@ -371,42 +371,42 @@ const StorePage = () => {
                             )}
                             {selectedPaymentMethod && selectedPaymentMethod.adminFee > 0 && (
                                 <div className='flex justify-between gap-4'>
-                                    <dt className='text-muted-foreground'>Biaya admin</dt>
+                                    <dt className='text-text-secondary'>Biaya admin</dt>
                                     <dd className='font-medium tabular-nums'>{priceToIDR(calculatedAdminFee || 0)}</dd>
                                 </div>
                             )}
                             {selectedVoucher && (
-                                <div className='flex justify-between gap-4 text-success'>
+                                <div className='flex justify-between gap-4 text-status-lime-text'>
                                     <dt>Diskon voucher</dt>
                                     <dd className='font-semibold tabular-nums'>{isLoadingVoucher ? loadingRow : "-" + priceToIDR(voucherDiscount || 0)}</dd>
                                 </div>
                             )}
                             {selectedShippingVoucher && (
-                                <div className='flex justify-between gap-4 text-success'>
+                                <div className='flex justify-between gap-4 text-status-lime-text'>
                                     <dt>Diskon ongkir</dt>
                                     <dd className='font-semibold tabular-nums'>{isLoadingVoucher ? loadingRow : "-" + priceToIDR(shippingVoucherDiscount || 0)}</dd>
                                 </div>
                             )}
                         </dl>
-                        <div className='flex items-baseline justify-between gap-4 border-t pt-4'>
-                            <span className='text-base font-bold'>Total bayar</span>
-                            <span className='text-xl font-extrabold tabular-nums'>{priceToIDR(grandTotal || 0)}</span>
+                        <div className='flex items-baseline justify-between gap-4 border-t border-border-button-default pt-4'>
+                            <span className='text-headline-semibold text-text-primary'>Total bayar</span>
+                            <span className='text-title-2-semibold tabular-nums text-text-primary'>{priceToIDR(grandTotal || 0)}</span>
                         </div>
                         <div className='hidden space-y-2 pt-1 lg:block'>
                             {confirmButton()}
-                            {blockedReason && <p className='text-center text-sm text-muted-foreground' role='status'>{blockedReason}</p>}
+                            {blockedReason && <p className='text-center text-body-regular text-text-secondary' role='status'>{blockedReason}</p>}
                         </div>
                     </div>
                 </aside>
             </div>
 
             {/* Phone: the total and the button stay in reach while the form scrolls. */}
-            <div className='fixed inset-x-0 bottom-0 z-30 border-t bg-card px-4 pb-safe pt-3 shadow-[0_-8px_24px_-12px_rgb(0_0_0/0.2)] lg:hidden'>
+            <div className='fixed inset-x-0 bottom-0 z-30 border-t border-border-button-default bg-background-full px-4 pb-safe pt-3 shadow-lg lg:hidden'>
                 <div className='mx-auto flex max-w-6xl flex-col gap-2 pb-3 min-[400px]:flex-row min-[400px]:items-center min-[400px]:gap-4'>
                     <div className='min-w-0 flex-1'>
-                        <p className='text-xs text-muted-foreground'>Total bayar</p>
-                        <p className='truncate text-lg font-extrabold tabular-nums'>{priceToIDR(grandTotal || 0)}</p>
-                        {blockedReason && <p className='text-xs text-muted-foreground min-[400px]:truncate' role='status'>{blockedReason}</p>}
+                        <p className='text-caption-1-regular text-text-secondary'>Total bayar</p>
+                        <p className='truncate text-headline-semibold tabular-nums text-text-primary'>{priceToIDR(grandTotal || 0)}</p>
+                        {blockedReason && <p className='text-caption-1-regular text-text-secondary min-[400px]:truncate' role='status'>{blockedReason}</p>}
                     </div>
                     <div className='min-[400px]:shrink-0'>{confirmButton()}</div>
                 </div>

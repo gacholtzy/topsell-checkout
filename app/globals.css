@@ -1,6 +1,26 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "../styles/globals.css";
+/* Legacy shadcn-style tokens (bg-card, text-muted-foreground, ...) still used by the pages
+   that have not moved to BoardUI components yet. */
+@config "../tailwind.config.ts";
+@plugin "tailwindcss-animate";
+
+/* BoardUI re-tinted to the Topsell brand: the accent ramp drives buttons, focus rings,
+   checkboxes, radios and tabs. 600 is the brand red. Font is Plus Jakarta Sans. */
+@theme {
+  --color-accent-50:  #fef2f3;
+  --color-accent-100: #fde6e8;
+  --color-accent-200: #fbd0d5;
+  --color-accent-300: #f7aab2;
+  --color-accent-400: #ef6f7f;
+  --color-accent-500: #e23a4e;
+  --color-accent-600: #cc1926;
+  --color-accent-700: #aa1520;
+  --color-accent-800: #8c141d;
+  --color-accent-900: #74151d;
+  --color-accent-950: #40070c;
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif,
+               "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
 
 /*
  * Topsell checkout — design tokens.
@@ -9,19 +29,20 @@
  */
 @layer base {
   :root {
-    --background: 30 18% 97%;
-    --foreground: 20 14% 10%;
+    /* Legacy shadcn-style names, pointed at BoardUI's neutrals so old and new surfaces match. */
+    --background: 0 0% 97%;
+    --foreground: 0 0% 4%;
     --card: 0 0% 100%;
-    --card-foreground: 20 14% 10%;
+    --card-foreground: 0 0% 4%;
     --popover: 0 0% 100%;
-    --popover-foreground: 20 14% 10%;
+    --popover-foreground: 0 0% 4%;
 
     --primary: 356 78% 45%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 30 12% 93%;
-    --secondary-foreground: 20 14% 16%;
-    --muted: 30 12% 94%;
-    --muted-foreground: 20 6% 36%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 32%;
     --accent: 356 60% 96%;
     --accent-foreground: 356 70% 32%;
 
@@ -32,10 +53,10 @@
     --destructive: 0 70% 42%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 28 9% 87%;
-    --input: 24 6% 56%;
+    --border: 0 0% 90%;
+    --input: 0 0% 60%;
     --ring: 356 78% 45%;
-    --radius: 0.5rem;
+    --radius: 0.625rem;
 
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;

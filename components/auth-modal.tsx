@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { InputOtp } from "@/components/base/input-otp/input-otp";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
@@ -560,13 +561,10 @@ export default function AuthModal({
                           <FormLabel className="text-base font-medium">
                             Nomor Whatsapp
                           </FormLabel>
-                          <div className="flex">
-                            <div className="flex items-center justify-center bg-slate-100 text-slate-900 px-3 h-9 rounded-l-md font-medium border border-r-0 border-input min-w-[60px]">
-                              +62
-                            </div>
+                          <div className="flex w-full">
                             <FormControl>
                               <Input
-                                className="rounded-l-none focus-visible:ring-0 focus-visible:ring-transparent"
+                                leadingAddon={<span className="px-2 text-body-medium text-text-secondary">+62</span>}
                                 placeholder="Nomor HP"
                                 type="tel"
                                 inputMode="numeric"
@@ -660,36 +658,16 @@ export default function AuthModal({
                                           maxLength={4}
                                         />
                                       </div>
-                                      <div className="flex justify-between gap-2">
-                                        {otpDigits.map((digit, index) => (
-                                          <div key={index} className="w-full">
-                                            <Input
-                                              ref={otpInputRefs[index]}
-                                              value={digit}
-                                              onChange={(e) =>
-                                                handleOtpDigitChange(
-                                                  index,
-                                                  e.target.value,
-                                                )
-                                              }
-                                              onKeyDown={(e) =>
-                                                handleOtpKeyDown(index, e)
-                                              }
-                                              onPaste={
-                                                index === 0
-                                                  ? handleOtpPaste
-                                                  : undefined
-                                              }
-                                              className="h-14 text-center text-xl font-bold w-full rounded-xl transition-all"
-                                              type="text"
-                                              inputMode="numeric"
-                                              maxLength={1}
-                                              autoComplete="one-time-code"
-                                              aria-label={`Digit ${index + 1}`}
-                                            />
-                                          </div>
-                                        ))}
-                                      </div>
+                                      <InputOtp
+                                        length={4}
+                                        aria-label="Kode OTP"
+                                        value={otpDigits.join("")}
+                                        onChange={(code) => {
+                                          const digits = Array.from({ length: 4 }, (_, i) => code[i] ?? "");
+                                          setOtpDigits(digits);
+                                          otpForm.setValue("otp", digits.join(""));
+                                        }}
+                                      />
                                     </div>
                                   </FormControl>
                                   <FormMessage />
@@ -888,13 +866,10 @@ export default function AuthModal({
                           <FormLabel className="text-base font-medium">
                             Nomor Whatsapp
                           </FormLabel>
-                          <div className="flex">
-                            <div className="flex items-center justify-center bg-slate-100 text-slate-900 px-3 h-9 rounded-l-md font-medium border border-r-0 border-input min-w-[60px]">
-                              +62
-                            </div>
+                          <div className="flex w-full">
                             <FormControl>
                               <Input
-                                className="rounded-l-none focus-visible:ring-0 focus-visible:ring-transparent"
+                                leadingAddon={<span className="px-2 text-body-medium text-text-secondary">+62</span>}
                                 placeholder="Nomor HP"
                                 type="tel"
                                 inputMode="numeric"

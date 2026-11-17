@@ -1,6 +1,8 @@
 "use client"
 import React from 'react'
-import { cn } from '../lib/utils'
+import { RadioGroup } from '@/components/base/radio/radio'
+import { RadioCard } from '@/components/base/radio/radio-card'
+import { Chip } from '@/components/base/badges/chip'
 import { useShipping } from '../context/shipping'
 import parse from 'html-react-parser'
 import AddressModal from './address-modal'
@@ -103,39 +105,38 @@ const ShippingOption = () => {
 
     return (
         <>
-            <div role='radiogroup' aria-label='Metode pengiriman' className='space-y-2'>
+            <RadioGroup
+                aria-label='Metode pengiriman'
+                value={selectedShippingMethod?.id ?? ''}
+                onChange={(value) => {
+                    const method = visibleMethods.find((m) => m.id === value)
+                    if (method) {
+                        if (selectShippingMethod) selectShippingMethod(method);
+                        setOpenDialog(true)
+                    }
+                }}
+            >
                 {visibleMethods.map((method) => {
-                    const active = selectedShippingMethod?.id === method.id
                     const note = priceNote(method)
                     return (
-                        <button
-                            type='button'
-                            role='radio'
-                            aria-checked={active}
+                        <RadioCard
                             key={method.id ?? method.title}
-                            onClick={() => {
-                                if (selectShippingMethod) selectShippingMethod(method);
-                                setOpenDialog(true)
-                            }}
-                            className={cn(
-                                'flex w-full items-start gap-3 rounded-lg border p-3.5 text-left transition-colors',
-                                active ? 'border-primary bg-accent' : 'border-input bg-card hover:bg-secondary'
-                            )}
-                        >
-                            <span className={cn('mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2', active ? 'border-primary' : 'border-input')}>
-                                {active && <span className='h-2.5 w-2.5 rounded-full bg-primary' />}
-                            </span>
-                            <span className='min-w-0 flex-1'>
-                                <span className='flex flex-wrap items-baseline justify-between gap-x-3'>
-                                    <span className='text-sm font-semibold sm:text-base'>{method.title}</span>
-                                    {note && <span className={cn('text-sm font-semibold tabular-nums', note === 'Gratis ongkir' && 'text-success')}>{note}</span>}
+                            value={method.id}
+                            title={
+                                <span className='flex min-w-0 items-baseline justify-between gap-3'>
+                                    <span className='truncate'>{method.title}</span>
+                                    {note && (
+                                        note === 'Gratis ongkir'
+                                            ? <Chip variant='caption' color='lime'>Gratis ongkir</Chip>
+                                            : <span className='shrink-0 tabular-nums'>{note}</span>
+                                    )}
                                 </span>
-                                <span className='mt-0.5 block text-sm text-muted-foreground'>{parse(method.description)}</span>
-                            </span>
-                        </button>
+                            }
+                            description={<span className='[&_*]:inline'>{parse(method.description)}</span>}
+                        />
                     )
                 })}
-            </div>
+            </RadioGroup>
 
             {/* The saved address / pickup shop, with a plain way to change it. */}
             {selectedShippingMethod && (

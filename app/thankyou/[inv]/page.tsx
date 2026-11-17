@@ -47,7 +47,7 @@ const ThankYouPage = () => {
                     <span className="h-8 w-8 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
                 </div>
             ) : !order ? (
-                <div className="rounded-lg border bg-card p-8 text-center">
+                <div className="rounded-3xl border border-border-button-default bg-background-full p-8 text-center">
                     <h1 className="text-xl font-bold">Pesanan tidak ditemukan</h1>
                     <p className="mt-2 text-sm text-muted-foreground">Periksa nomor invoice, atau buka menu Pesanan untuk melihat riwayat Anda.</p>
                     <Button asChild className="mt-5"><Link href="/order">Lihat pesanan saya</Link></Button>
@@ -60,7 +60,7 @@ const ThankYouPage = () => {
                         Pesanan <span className="font-semibold text-foreground">{order.invoice}</span> sudah kami terima. Rinciannya ada di bawah.
                     </p>
 
-                    <div className="mt-6 divide-y rounded-lg border bg-card">
+                    <div className="mt-6 divide-y rounded-3xl border border-border-button-default bg-background-full">
                         <section className="p-4 sm:p-6" aria-labelledby="ty-items">
                             <h2 id="ty-items" className="mb-3 text-base font-bold">Barang</h2>
                             <ul className="space-y-4">

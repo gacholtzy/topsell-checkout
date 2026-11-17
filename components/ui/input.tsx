@@ -1,18 +1,30 @@
 import * as React from "react"
+import { InputBase } from "@/components/base/input/input"
+import { cx } from "@/utils/cx"
 
-import { cn } from "../../lib/utils"
+/**
+ * Compatibility layer over BoardUI's InputBase (filled field, ring on focus).
+ * Works as a plain controlled/uncontrolled <input>, so react-hook-form's
+ * `{...field}` and onChange(event) keep working. Fields are 44px tall on
+ * phones, 36px from md.
+ */
+type InputProps = Omit<React.ComponentProps<"input">, "size" | "className"> & {
+  className?: string
+  fieldClassName?: string
+  leadingAddon?: React.ReactNode
+  trailingAddon?: React.ReactNode
+}
 
-const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
-  ({ className, type, ...props }, ref) => {
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ className, fieldClassName, leadingAddon, trailingAddon, ...props }, ref) => {
     return (
-      <input
-        type={type}
-        className={cn(
-          "flex h-11 w-full rounded-lg border border-input bg-card px-3 py-1 text-base transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50 md:h-10 md:text-sm aria-[invalid=true]:border-destructive",
-          className
-        )}
+      <InputBase
         ref={ref}
-        {...props}
+        fieldClassName={cx("min-h-11 items-center md:min-h-9", "has-[input[aria-invalid=true]]:ring-border-error-default", fieldClassName)}
+        className={className}
+        leadingAddon={leadingAddon}
+        trailingAddon={trailingAddon}
+        {...(props as object)}
       />
     )
   }

@@ -224,7 +224,7 @@ const OrderPage = () => {
     const OrderCard = ({ order }: { order: Order }) => {
         const isPickup = order.shipping?.title === "Ambil di Toko"
         return (
-        <article className="rounded-lg border bg-card">
+        <article className="rounded-3xl border border-border-button-default bg-background-full">
             <header className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2 border-b p-4 sm:px-6">
                 <div className="min-w-0">
                     <h3 className="break-all text-base font-bold">{order.invoice}</h3>
@@ -303,7 +303,7 @@ const OrderPage = () => {
 
                 {/* Booked with the courier but no resi yet: the tracking page already works. */}
                 {!isPickup && !order.trackingNumber && order.biteshipTrackingID && (
-                    <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-secondary px-4 py-3 text-sm">
+                    <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-background-secondary-default px-4 py-3 text-sm">
                         <span>Kurir sedang disiapkan. Nomor resi menyusul.</span>
                         <Button asChild size="sm"><Link href={`/tracking/${order.invoice}`}>Lacak paket</Link></Button>
                     </div>
@@ -311,7 +311,7 @@ const OrderPage = () => {
 
                 {/* A resi only means something for a parcel that travels to an address. */}
                 {!isPickup && order.trackingNumber && (
-                    <div className="rounded-lg bg-secondary px-4 py-3 text-sm">
+                    <div className="rounded-2xl bg-background-secondary-default px-4 py-3 text-sm">
                         <p className="text-muted-foreground">No. resi{order.courierName ? ` · ${order.courierName}` : ''}</p>
                         <div className="mt-1 flex flex-wrap items-center gap-2">
                             <span className="break-all text-base font-bold tabular-nums">{order.trackingNumber}</span>
@@ -421,26 +421,16 @@ const OrderPage = () => {
             </div>
 
             <Tabs defaultValue="pending" className="w-full">
-                <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 p-1.5">
-                    <TabsTrigger value="pending" className="flex items-center gap-2">
-                        <Clock className="h-4 w-4" />
-                        Belum Bayar ({pendingTotal})
+                <TabsList>
+                    <TabsTrigger value="pending">Belum Bayar ({pendingTotal})
                     </TabsTrigger>
-                    <TabsTrigger value="proses" className="flex items-center gap-2">
-                        <Package className="h-4 w-4" />
-                        Diproses ({prosesTotal})
+                    <TabsTrigger value="proses">Diproses ({prosesTotal})
                     </TabsTrigger>
-                    <TabsTrigger value="sent" className="flex items-center gap-2">
-                        <Truck className="h-4 w-4" />
-                        Dikirim / Ambil di Toko ({sendedTotal})
+                    <TabsTrigger value="sent">Dikirim / Ambil di Toko ({sendedTotal})
                     </TabsTrigger>
-                    <TabsTrigger value="complete" className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4" />
-                        Selesai ({completeTotal})
+                    <TabsTrigger value="complete">Selesai ({completeTotal})
                     </TabsTrigger>
-                    <TabsTrigger value="expired" className="flex items-center gap-2">
-                        <XCircle className="h-4 w-4" />
-                        Kadaluarsa ({expiredTotal})
+                    <TabsTrigger value="expired">Kadaluarsa ({expiredTotal})
                     </TabsTrigger>
                 </TabsList>
 

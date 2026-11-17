@@ -1,20 +1,41 @@
 "use client"
 
 import React from 'react'
-import { Button } from './ui/button'
 import Link from 'next/link'
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
-import { User, Package, Star, LogOut, LogIn, ShoppingCart, Ticket } from 'lucide-react'
+import { useRouter, usePathname } from 'next/navigation'
+import {
+    RiUserLine,
+    RiShoppingCartLine,
+    RiBox3Line,
+    RiCoupon3Line,
+    RiLogoutBoxRLine,
+    RiLoginBoxLine,
+} from '@remixicon/react'
+import { ButtonLink } from '@/components/base/buttons/button'
+import {
+    Dropdown,
+    DropdownTrigger,
+    DropdownPopover,
+    DropdownGroup,
+    DropdownItem,
+    DropdownDivider,
+} from '@/components/base/dropdown/dropdown'
 import { useAuthStore } from '@/lib/useAuthStore'
 import { useToast } from '@/hooks/use-toast'
-import { useRouter, usePathname } from 'next/navigation'
-import { Separator } from './ui/separator'
+
+const MENU = [
+    { href: '/cart', label: 'Keranjang', icon: RiShoppingCartLine },
+    { href: '/order', label: 'Pesanan', icon: RiBox3Line },
+    { href: '/profil', label: 'Profil', icon: RiUserLine },
+    { href: '/voucher-saya', label: 'Voucher saya', icon: RiCoupon3Line },
+]
 
 const AppHeader = () => {
     const { logout, user, token, isAuthenticated } = useAuthStore()
     const { toast } = useToast()
     const router = useRouter()
     const pathname = usePathname()
+    const [menuOpen, setMenuOpen] = React.useState(false)
 
     // The login state lives in localStorage and is read AFTER the first render, so
     // until it has loaded every visitor looks logged out. Drawing the login button
@@ -37,119 +58,66 @@ const AppHeader = () => {
     const handleLogout = () => {
         logout()
         toast({
-            title: 'Logout Berhasil',
-            description: 'Anda telah berhasil keluar dari akun',
+            title: 'Logout berhasil',
+            description: 'Anda telah keluar dari akun',
         })
-        // router.push('/auth?from=%2Fcart')
         router.push("https://topsellbelanja.com")
     }
 
+    const go = (href: string) => {
+        setMenuOpen(false)
+        router.push(href)
+    }
+
     return (
-        <div className="border-b bg-card">
-          <div className="container mx-auto max-w-7xl px-4 sm:px-6">
-            <header className="flex h-14 items-center justify-between sm:h-16">
-                <Link href="https://topsellbelanja.com/">
-                    <img src="/images/logo.webp" alt="Logo"
-                        className='h-8 w-auto sm:h-10'
-                    />
-                </Link>
-                <nav>
-                    <ul className="flex space-x-4">
-                        {/* Not hydrated yet: keep the space, show nothing (see above). */}
-                        {!hydrated && <li className="h-10 w-10" aria-hidden="true" />}
+        <div className="border-b border-border-button-default bg-background-full">
+            <div className="mx-auto max-w-6xl px-4 sm:px-6">
+                <header className="flex h-14 items-center justify-between sm:h-16">
+                    <Link href="https://topsellbelanja.com/" aria-label="Topsell Belanja">
+                        <img src="/images/logo.webp" alt="Topsell Belanja" className='h-8 w-auto sm:h-10' />
+                    </Link>
 
-                        {/* Signed out: the only thing to offer is a way in. Cart, orders,
-                            profile, vouchers and logout all belong to an account. */}
-                        {hydrated && !loggedIn && (
-                            <li>
-                                <Button asChild className="px-4">
-                                    <Link href={loginHref}>
-                                        <LogIn className="h-4 w-4 mr-2" />
-                                        Login
-                                    </Link>
-                                </Button>
-                            </li>
-                        )}
+                    {/* Not hydrated yet: keep the space, show nothing (see above). */}
+                    {!hydrated && <span className="size-9" aria-hidden="true" />}
 
-                        {hydrated && loggedIn && (
-                        <li>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <button type="button" aria-label="Menu akun" className='flex h-11 w-11 items-center justify-center rounded-full border bg-card text-foreground transition-colors hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'>
-                                        <User className="h-5 w-5" />
-                                    </button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-64 p-2" align="end">
-                                    <div className="space-y-1">
-                                        <h4 className='text-sm font-bold px-4 py-2'>Hai, {user?.fullName}</h4>
-                                        <Separator />
-                                        <Button
-                                            variant="ghost"
-                                            className="w-full justify-start text-left"
-                                            asChild
-                                        >
-                                            <Link href="/cart">
-                                                <ShoppingCart className="h-4 w-4 mr-2" />
-                                                Keranjang
-                                            </Link>
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            className="w-full justify-start text-left"
-                                            asChild
-                                        >
-                                            <Link href="/order">
-                                                <Package className="h-4 w-4 mr-2" />
-                                                Pesanan
-                                            </Link>
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            className="w-full justify-start text-left"
-                                            asChild
-                                        >
-                                            <Link href="/profil">
-                                                <User className="h-4 w-4 mr-2" />
-                                                Profil
-                                            </Link>
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            className="w-full justify-start text-left"
-                                            asChild
-                                        >
-                                            <Link href="/voucher-saya">
-                                                <Ticket className="h-4 w-4 mr-2" />
-                                                Voucher Saya
-                                            </Link>
-                                        </Button>
-                                        {/* <Button
-                                            variant="ghost"
-                                            className="w-full justify-start text-left"
-                                            asChild
-                                        >
-                                            <Link href="/points">
-                                                <Star className="h-4 w-4 mr-2" />
-                                                Poin
-                                            </Link>
-                                        </Button> */}
-                                        <Button
-                                            variant="ghost"
-                                            className="w-full justify-start text-left text-destructive hover:text-destructive hover:bg-destructive/10"
-                                            onClick={handleLogout}
-                                        >
-                                            <LogOut className="h-4 w-4 mr-2" />
-                                            Logout
-                                        </Button>
-                                    </div>
-                                </PopoverContent>
-                            </Popover>
-                        </li>
-                        )}
-                    </ul>
-                </nav>
-            </header>
-          </div>
+                    {/* Signed out: the only thing to offer is a way in. */}
+                    {hydrated && !loggedIn && (
+                        <ButtonLink href={loginHref} leadingIcon={RiLoginBoxLine} className="max-md:h-11">
+                            Login
+                        </ButtonLink>
+                    )}
+
+                    {hydrated && loggedIn && (
+                        <Dropdown isOpen={menuOpen} onOpenChange={setMenuOpen}>
+                            <DropdownTrigger
+                                aria-label="Menu akun"
+                                className="flex size-11 items-center justify-center rounded-full border border-border-button-default bg-background-primary-default text-foreground-icon-primary transition-colors hover:bg-background-primary-hover md:size-9"
+                            >
+                                <RiUserLine className="size-5" aria-hidden />
+                            </DropdownTrigger>
+                            <DropdownPopover aria-label="Akun" placement="bottom end">
+                                <p className="truncate px-2 pt-1 text-body-semibold text-text-primary">Hai, {user?.fullName}</p>
+                                <DropdownDivider />
+                                <DropdownGroup>
+                                    {MENU.map(({ href, label, icon: Icon }) => (
+                                        <DropdownItem key={href} onSelect={() => go(href)}>
+                                            <Icon className="size-5 shrink-0 text-foreground-icon-secondary" aria-hidden />
+                                            {label}
+                                        </DropdownItem>
+                                    ))}
+                                </DropdownGroup>
+                                <DropdownDivider />
+                                <DropdownGroup>
+                                    <DropdownItem onSelect={handleLogout} className="text-text-destructive">
+                                        <RiLogoutBoxRLine className="size-5 shrink-0" aria-hidden />
+                                        Logout
+                                    </DropdownItem>
+                                </DropdownGroup>
+                            </DropdownPopover>
+                        </Dropdown>
+                    )}
+                </header>
+            </div>
         </div>
     )
 }

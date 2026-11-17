@@ -1,53 +1,86 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
+import {
+  Button as BoardButton,
+  buttonStyles,
+  type ButtonProps as BoardButtonProps,
+} from "@/components/base/buttons/button"
+import { cx } from "@/utils/cx"
 
-import { cn } from "../../lib/utils"
+/**
+ * Compatibility layer: the pages keep calling `<Button variant size asChild>`,
+ * and this renders the BoardUI button (components/base/buttons/button.tsx).
+ *
+ *   default / destructive / outline / secondary / ghost / link
+ *     -> primary / danger / secondary / secondary / ghost / ghost (underlined)
+ *   size default | sm | lg | icon -> medium | small | medium (tall) | icon-only
+ *
+ * Touch targets stay at 44px on phones: BoardUI's own medium size is 36px.
+ */
+type Variant = "default" | "destructive" | "outline" | "secondary" | "ghost" | "link"
+type Size = "default" | "sm" | "lg" | "icon"
 
-const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background disabled:pointer-events-none disabled:opacity-45 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
-  {
-    variants: {
-      variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline: "border border-input bg-card text-foreground hover:bg-secondary",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/70",
-        ghost: "text-foreground hover:bg-secondary",
-        link: "text-primary underline underline-offset-4 hover:text-primary/80",
-      },
-      size: {
-        default: "h-11 px-4 md:h-10",
-        sm: "h-9 px-3 text-sm",
-        lg: "h-12 px-6 text-base",
-        icon: "h-11 w-11 md:h-10 md:w-10",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  }
-)
+const VARIANT: Record<Variant, keyof typeof buttonStyles.variant> = {
+  default: "primary",
+  destructive: "danger",
+  outline: "secondary",
+  secondary: "secondary",
+  ghost: "ghost",
+  link: "ghost",
+}
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+function classesFor(variant: Variant, size: Size) {
+  const boardSize = size === "sm" ? "small" : "medium"
+  return cx(
+    buttonStyles.base,
+    buttonStyles.size[boardSize],
+    buttonStyles.variant[VARIANT[variant]],
+    size === "default" && "max-md:h-11 max-md:px-4",
+    size === "lg" && "h-11 px-5 text-body-medium md:h-11",
+    size === "sm" && "max-md:h-10",
+    size === "icon" && "size-11 p-0 md:size-9",
+    variant === "link" && "underline underline-offset-4",
+    "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 gap-2",
+  )
+}
+
+export function buttonVariants({
+  variant = "default",
+  size = "default",
+  className,
+}: { variant?: Variant; size?: Size; className?: string } = {}) {
+  return cx(classesFor(variant, size), className)
+}
+
+export interface ButtonProps extends Omit<BoardButtonProps, "variant" | "size" | "iconOnly"> {
+  variant?: Variant
+  size?: Size
   asChild?: boolean
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button"
+  ({ className, variant = "default", size = "default", asChild = false, children, type, ...props }, ref) => {
+    if (asChild) {
+      return (
+        <Slot className={cx(classesFor(variant, size), "px-3", className)} {...(props as object)}>
+          {children}
+        </Slot>
+      )
+    }
     return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+      <button
         ref={ref}
+        type={type ?? "button"}
+        className={cx(classesFor(variant, size), "px-3", className)}
         {...props}
-      />
+      >
+        {children}
+      </button>
     )
   }
 )
 Button.displayName = "Button"
 
-export { Button, buttonVariants }
+export { Button }
+// Re-export so new code can reach the real BoardUI button from the same place.
+export { BoardButton }

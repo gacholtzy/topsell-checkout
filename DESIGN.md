@@ -1,52 +1,48 @@
 # Topsell Checkout — Design
 
-Mode: **Operate** (an app people use under time pressure, mostly on a phone). Everything is judged by one question: can the customer see what to do next without thinking?
+UI memakai **BoardUI** (https://boardui.com): komponen disalin ke repo sebagai source (React 19 + Tailwind v4 + React Aria), lalu diberi warna merek Topsell dan font Plus Jakarta Sans. Mode desain: **Operate** (aplikasi yang dipakai cepat, kebanyakan di ponsel). Ukuran keberhasilan: pembeli langsung tahu langkah berikutnya.
 
-## Principles
+## Pondasi
 
-1. **One job per screen, one primary action.** The red button is the next step. Nothing else on the page is red except the active state of that step.
-2. **Structure by proximity, not by boxes.** One bordered sheet per area. Inside it, sections are separated by hairlines. No cards inside cards, no icon tiles above headings, no decorative gradients, glass or glow.
-3. **Say what is missing.** A disabled "Konfirmasi Pesanan" always shows why (`blockedReason` in `app/(page)/page.tsx`). Steps turn into a green check when complete.
-4. **Phone first.** 44px touch targets, pickers open as bottom sheets, total + primary action live in a bottom bar, inputs are ≥16px so iOS does not zoom.
-5. **Prices are data.** Tabular numerals everywhere money appears, right-aligned, one currency format.
+| Hal | Di mana |
+|---|---|
+| Tailwind v4 (`@tailwindcss/postcss`) | `postcss.config.mjs`, `app/globals.css` |
+| Token & tipografi BoardUI | `styles/theme.css`, `styles/typography.css`, `styles/globals.css` (jangan diedit tanpa alasan; disalin dari `npx boardui init`) |
+| Warna merek | `app/globals.css` → `@theme { --color-accent-50…950 }` (600 = merah merek `#cc1926`). Seluruh tombol utama, fokus, checkbox, radio, tab ikut. |
+| Font | Plus Jakarta Sans lewat `next/font` (`--font-jakarta` di `<html>`), dipasang ke `--font-sans` |
+| Token lama (shadcn) | `tailwind.config.ts` dimuat lewat `@config`; nilainya (`--background`, `--card`, `--border`, …) di `app/globals.css` sudah diarahkan ke netral BoardUI. Dipakai oleh halaman yang belum dipindah. Jangan menambah pemakaian baru. |
+| Util | `utils/cx.ts` (tailwind-merge yang paham gaya teks BoardUI) — pakai `cx()`, bukan `clsx` |
+| Ikon | `@remixicon/react` (BoardUI). `lucide-react` masih ada di halaman lama. |
 
-## Tokens (`app/globals.css`, `tailwind.config.ts`)
+Komponen BoardUI ada di `components/base/*`, `components/foundations/*` (jangan diedit sembarangan; perbarui dengan `npx boardui@latest add <nama> --overwrite`, set `BOARDUI_TELEMETRY_DISABLED=1`). Terpasang: button, link-button, icon-button, close-button, input, textarea, checkbox, checkbox-card, radio, radio-card, select, modal, drawer, popover, dropdown, tabs, chip, counter, divider, breadcrumb, number-field, spinner, skeleton, toast, input-otp, accordion, tooltip, avatar, status-dot, search-field.
 
-| Token | Value | Use |
-|---|---|---|
-| `--background` | warm off-white `30 18% 97%` | page |
-| `--card` | white | sheets, inputs |
-| `--foreground` | `20 14% 10%` | text (16.4:1) |
-| `--muted-foreground` | `20 6% 36%` | secondary text (6.3:1 on page) |
-| `--primary` | brand red `356 78% 45%` | primary action, active selection (5.6:1 with white) |
-| `--accent` | `356 60% 96%` | selected row background |
-| `--success` / `--success-soft` | green `152 62% 26%` | done steps, savings, paid |
-| `--warning` / `--warning-soft` | amber `32 90% 28%` | deadlines, pending |
-| `--destructive` | `0 70% 42%` | errors, sold out |
-| `--border` / `--input` | hairline / `24 6% 56%` | dividers / form fields (3.2:1 on white) |
-| `--radius` | `0.5rem` | everything; no pills except status chips |
+## Lapisan kompatibilitas (`components/ui/*`)
 
-Type: **Plus Jakarta Sans** (self-hosted by `next/font`), weights 500/600/700/800. Scale 12 / 14 / 16 / 20 / 30. Headings use `text-wrap: balance`.
+Halaman lama tetap memanggil API shadcn; isinya sekarang BoardUI:
 
-Elevation: none on content. Shadows only on things that float (bottom bar, sheets, dropdowns) and always with a vertical offset and soft blur.
+| `components/ui/…` | Dirender dengan |
+|---|---|
+| `button` (`variant`, `size`, `asChild`) | `components/base/buttons/button` (default→primary, destructive→danger, outline/secondary→secondary, ghost/link→ghost). Target 44px di ponsel. |
+| `input`, `textarea` | `InputBase`, `TextareaBase` (field terisi, ring saat fokus). Props `<input>` biasa, jadi react-hook-form tetap jalan. Awalan seperti `+62` lewat `leadingAddon`. |
+| `dialog`, `alert-dialog` | `Modal` (layar ≥640px) dan `Drawer` bawah / bottom sheet (ponsel). `DialogContent` punya `hideClose` dan `dismissable`. Jangan beri kelas ukuran ke `DialogContent`. |
+| `tabs` | `Tabs` BoardUI (garis bawah, bisa digeser ke samping) |
+| `badge` | `Chip` |
+| `use-toast` / `toast()` | `toast()` BoardUI; `<Toaster />` dipasang di `app/layout.tsx`. Pesan identik saling menggantikan. |
 
-Motion: sheets slide, spinners spin, nothing else. `prefers-reduced-motion` turns it all off.
+Kode baru sebaiknya langsung memakai komponen `components/base/*`.
 
-## Layout
+## Pola layar
 
-- Content width `max-w-6xl` (checkout, cart), `max-w-2xl` (result pages: payment, thank-you, tracking), `max-w-3xl` (orders).
-- Checkout and cart: `minmax(0,1fr) | 380px` grid from `lg`. Summary is sticky. Below `lg` the summary flows after the steps and a fixed bottom bar carries total + button (stacks under 400px).
-- Steps (`components/checkout/section.tsx`): 1 Barang, 2 Pengiriman (method → address row → courier), 3 Pembayaran. Voucher sits at the top of the summary.
+- **Checkout** (`app/(page)/page.tsx`): `Breadcrumb` → 3 langkah bernomor (`components/checkout/section.tsx`) → ringkasan menempel di kanan (≥`lg`). Metode pengiriman dan kurir adalah `RadioGroup` + `RadioCard`. Tombol "Konfirmasi Pesanan" yang nonaktif selalu menyebut alasannya (`blockedReason`). Di ponsel, total + tombol ada di bar bawah (menumpuk di <400px).
+- **Keranjang**: `Checkbox`, `NumberField` untuk jumlah, strip rekomendasi geser.
+- **Login**: `InputOtp` 4 digit, tab garis bawah.
+- Wadah utama `rounded-3xl border border-border-button-default bg-background-full`. Tipografi memakai utilitas komposit (`text-title-1-semibold`, `text-headline-semibold`, `text-body-regular`, `text-caption-1-regular`).
 
-## Components
+## Aturan
 
-- `components/ui/*` is shadcn, restyled: 44px controls (40px from `md`), 8px radius, visible focus ring, `Dialog` is a bottom sheet below `sm` and a centred dialog above.
-- Choice rows (shipping method, courier) are real radio groups: whole row clickable, `role="radio"`, selected = primary border + accent fill.
-- Pickers that open a sheet (address, payment, voucher) share one row pattern: value on the left, underlined "Pilih / Ganti" on the right.
-
-## Don't
-
-- Don't add a second accent colour or a gradient.
-- Don't wrap a bordered sheet in another card.
-- Don't use red for anything that is not the primary action, an active choice, or an error.
-- Don't truncate prices, invoice numbers or courier names; let them wrap.
+- Warna lewat token semantik BoardUI (`text-text-primary`, `text-text-secondary`, `bg-background-secondary-default`, `border-border-button-default`, `text-status-lime-text`…). Tidak ada warna mentah (`gray-500`, hex).
+- Satu aksen (merah merek) untuk aksi utama dan pilihan aktif; hijau (`lime`) hanya untuk "gratis/selesai/hemat".
+- Jangan menumpuk kartu di dalam kartu; pisahkan dengan garis tipis.
+- Harga: `tabular-nums`, jangan dipotong; nomor invoice dan nama kurir boleh turun baris.
+- Kontras teks ≥4,5:1, target sentuh ≥44px di ponsel, `prefers-reduced-motion` dihormati.
+- Uji di 320, 375, 768, dan desktop; tidak boleh ada geser horizontal halaman.

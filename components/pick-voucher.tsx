@@ -115,7 +115,7 @@ const PickVoucher = () => {
                         </div>
                     </div>
                 )}
-                <DialogContent className='overflow-y-auto max-h-[85dvh]'>
+                <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Pilih Voucher</DialogTitle>
                     </DialogHeader>

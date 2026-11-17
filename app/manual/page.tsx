@@ -161,7 +161,6 @@ const ManualPageContent = () => {
         toast({
             title: "Berhasil menyalin nomor rekening",
             description: "Silakan paste ke bank",
-            className: "bg-success text-white"
         })
     }
 
@@ -217,7 +216,7 @@ const ManualPageContent = () => {
                     <span className="h-8 w-8 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
                 </div>
             ) : order?.status === "expired" ? (
-                <div className="rounded-lg border bg-card p-6 text-center sm:p-10">
+                <div className="rounded-3xl border border-border-button-default bg-background-full p-6 text-center sm:p-10">
                     <h1 className="text-2xl font-extrabold tracking-tight">Pesanan kedaluwarsa</h1>
                     <p className="mx-auto mt-3 max-w-md text-muted-foreground">
                         Pesanan <span className="font-semibold text-foreground">{order.invoice}</span> melewati batas waktu pembayaran dan dibatalkan otomatis.
@@ -235,7 +234,7 @@ const ManualPageContent = () => {
                     <p className="text-sm font-semibold text-muted-foreground">Pesanan {order?.invoice}</p>
                     <h1 className="mt-1 text-2xl font-extrabold tracking-tight sm:text-3xl">Selesaikan pembayaran</h1>
 
-                    <div className="mt-6 rounded-lg border bg-card">
+                    <div className="mt-6 rounded-3xl border border-border-button-default bg-background-full">
                         <div className="flex flex-wrap items-center justify-between gap-3 border-b p-4 sm:p-6">
                             <div>
                                 <p className="text-sm text-muted-foreground">Bayar sebelum</p>
@@ -259,7 +258,7 @@ const ManualPageContent = () => {
                     </div>
 
                     <h2 className="mb-3 mt-8 text-lg font-bold">Transfer ke salah satu rekening</h2>
-                    <ul className="divide-y rounded-lg border bg-card">
+                    <ul className="divide-y rounded-3xl border border-border-button-default bg-background-full">
                         {bankAccounts.map((acc) => (
                             <li key={acc.number} className="flex items-center justify-between gap-3 p-4 sm:p-5">
                                 <div className="min-w-0">
@@ -277,7 +276,7 @@ const ManualPageContent = () => {
                     </p>
 
                     {order && (
-                        <details className="group mt-8 rounded-lg border bg-card">
+                        <details className="group mt-8 rounded-3xl border border-border-button-default bg-background-full">
                             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4 font-semibold sm:p-5">
                                 <span>Rincian pesanan</span>
                                 <span className="flex items-center gap-3">

@@ -113,7 +113,7 @@ export default async function RootLayout({
   };
   
   return (
-    <html lang="en">
+    <html lang="id" className={jakarta.variable}>
       <head>
         {scripts.map((script, index) => {
           const attrs = parseAttributes(script.attributes);
@@ -125,7 +125,7 @@ export default async function RootLayout({
           return <script key={index} dangerouslySetInnerHTML={{ __html: script.content }} />;
         })}
       </head>
-      <body className={`${jakarta.variable} font-sans antialiased`}>
+      <body className="font-sans antialiased">
         <GlobalDialogProvider>
           <SessionGuard />
           {noscript ? <noscript dangerouslySetInnerHTML={{ __html: noscript }} /> : null}

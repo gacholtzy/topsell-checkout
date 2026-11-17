@@ -1,7 +1,5 @@
 import React from 'react'
-import { Dialog, DialogHeader, DialogTitle, DialogPortal, DialogOverlay } from './ui/dialog';
-import * as DialogPrimitive from "@radix-ui/react-dialog"
-import { cn } from "@/lib/utils"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Input } from './ui/input';
 import { useAddress } from '../context/address';
 import { Button } from './ui/button';
@@ -14,26 +12,7 @@ import { useCart } from '../context/cart';
 import { useShipping } from '../context/shipping';
 import { usePickupStock } from '../context/pickup-stock';
 
-// Custom DialogContent without close button
-const CustomDialogContent = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(({ className, children, ...props }, ref) => (
-  <DialogPortal>
-    <DialogOverlay />
-    <DialogPrimitive.Content
-      ref={ref}
-      className={cn(
-        "fixed z-50 grid grid-cols-[minmax(0,1fr)] gap-4 overflow-x-hidden overflow-y-auto border bg-background p-5 pb-safe inset-x-0 bottom-0 max-h-[92dvh] rounded-t-xl border-b-0 shadow-[0_-12px_32px_-12px_rgb(0_0_0/0.25)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom duration-200 sm:inset-auto sm:left-1/2 sm:top-1/2 sm:w-[calc(100%-2rem)] sm:max-w-lg sm:-translate-x-1/2 sm:-translate-y-1/2 sm:max-h-[88dvh] sm:rounded-xl sm:border-b sm:p-6 sm:data-[state=open]:slide-in-from-bottom-0 sm:data-[state=closed]:slide-out-to-bottom-0 sm:data-[state=open]:zoom-in-95 sm:data-[state=closed]:zoom-out-95",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </DialogPrimitive.Content>
-  </DialogPortal>
-))
-CustomDialogContent.displayName = DialogPrimitive.Content.displayName
+
 
 /**
  * Availability badge on a store card, plus how much of the basket the shop
@@ -305,11 +284,7 @@ const AreaDialog = ({
             open={open}
             onOpenChange={onOpenChange}
         >
-            <CustomDialogContent
-                className='overflow-y-auto max-h-[calc(100vh-4rem)]'
-                onPointerDownOutside={(e) => e.preventDefault()}
-                onEscapeKeyDown={(e) => e.preventDefault()}
-            >
+            <DialogContent hideClose dismissable={false}>
                 <DialogHeader>
                     <DialogTitle>Pilih Lokasi Toko</DialogTitle>
                 </DialogHeader>
@@ -401,7 +376,7 @@ const AreaDialog = ({
                             }
                         }}>Pilih</Button>
                 </div>
-            </CustomDialogContent>
+            </DialogContent>
         </Dialog>
     )
 }
