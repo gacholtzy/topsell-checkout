@@ -81,26 +81,26 @@ const PaymentOption = () => {
                             })
                         }
                     }}
-                    className='w-full flex justify-between items-center border rounded-md p-4 border-slate-300 h-16 text-base'>
-                    {selectedPaymentMethod ? <div
-                        className='flex items-center max-w-[80%]'
+                    className='h-auto min-h-14 w-full justify-between gap-3 rounded-lg border-input p-3.5 text-left text-sm font-semibold'>
+                    {selectedPaymentMethod ? <span
+                        className='flex min-w-0 items-center gap-3'
                     >
-                        <img src={selectedPaymentMethod.icon} alt={selectedPaymentMethod.name} className='w-8 mr-2 flex-shrink-0' />
-                        <h3 className='font-semibold truncate'>{selectedPaymentMethod.name}</h3>
-                    </div> : "Pilih Metode Pembayaran"}
-                    <ChevronRightIcon className='w-6 h-6 flex-shrink-0' />
+                        <img src={selectedPaymentMethod.icon} alt='' className='h-6 w-10 shrink-0 object-contain' />
+                        <span className='truncate'>{selectedPaymentMethod.name}</span>
+                    </span> : <span className='text-muted-foreground'>Pilih metode pembayaran</span>}
+                    <span className='shrink-0 text-sm font-semibold text-primary underline underline-offset-4'>{selectedPaymentMethod ? 'Ganti' : 'Pilih'}</span>
                 </Button>
                 {/* </Button> */}
-                <DialogContent className='overflow-y-auto max-h-[calc(100vh-4rem)]'>
+                <DialogContent className='max-h-[85dvh] max-w-md overflow-y-auto'>
                     <DialogHeader>
-                        <DialogTitle className="text-center text-2xl font-black">
+                        <DialogTitle className="text-center text-xl font-bold">
                             Pilih Metode Pembayaran
                         </DialogTitle>
                     </DialogHeader>
                     {
                         paymentGroups.map((group: PaymentGroup, index) => (
                             <div key={`${index}-12`}>
-                                <h3 className='text-lg font-semibold'>{group.name}</h3>
+                                <h3 className='text-sm font-bold uppercase tracking-wide text-muted-foreground'>{group.name}</h3>
                                 {
                                     group.paymentMethods
                                         .filter(method => {
@@ -111,8 +111,8 @@ const PaymentOption = () => {
                                             return true;
                                         })
                                         .map((method, idx) => (
-                                            <div className='space-y-6' key={idx}>
-                                                <div className='flex items-center gap-4 mt-4 cursor-pointer'
+                                            <div key={idx}>
+                                                <div className='mt-2 flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition-colors hover:border-primary/40 hover:bg-accent'
                                                     onClick={() => {
                                                         if (selectPaymentMethod) {
                                                             selectPaymentMethod(method)
@@ -120,16 +120,15 @@ const PaymentOption = () => {
                                                         }
                                                     }}
                                                 >
-                                                    <img src={method.icon} alt={method.name} className='w-12' />
-                                                    <div className='w-full'>
-                                                        <h3 className='text-sm font-semibold truncated'>{method.name} ({method.excerpt})</h3>
-                                                        <p className='text-[10px]'>{method.description}</p>
+                                                    <img src={method.icon} alt={method.name} className='w-12 shrink-0' />
+                                                    <div className='min-w-0 flex-1'>
+                                                        <h3 className='text-sm font-semibold'>{method.name} ({method.excerpt})</h3>
+                                                        <p className='text-xs text-muted-foreground'>{method.description}</p>
                                                     </div>
-                                                    <div className='w-auto flex justify-end'>
-                                                        <ChevronRightIcon className='w-4 h-4' />
+                                                    <div className='flex shrink-0 justify-end'>
+                                                        <ChevronRightIcon className='h-4 w-4 text-muted-foreground' />
                                                     </div>
                                                 </div>
-                                                <Separator />
                                             </div>
                                         ))
                                 }
@@ -142,7 +141,7 @@ const PaymentOption = () => {
                 selectedPaymentMethod && selectedPaymentMethod.key == "manual" && (
                     <div className='space-y-4 my-6'>
                         <div className='space-y-2'>
-                            <h4 className='text-sm text-slate-600'>
+                            <h4 className='text-sm text-muted-foreground'>
                                 No. Rekening Anda
                             </h4>
                             <Input type='text' placeholder='No. Rekening' value={bankNumber} onChange={(e) => {
@@ -154,7 +153,7 @@ const PaymentOption = () => {
                             }} />
                         </div>
                         <div className='space-y-2'>
-                            <h4 className='text-sm text-slate-600'>
+                            <h4 className='text-sm text-muted-foreground'>
                                 Nama Pemilik Rekening
                             </h4>
                             <Input type='text' placeholder='Nama Pemilik Rekening' value={bankAccountName} onChange={(e) => {

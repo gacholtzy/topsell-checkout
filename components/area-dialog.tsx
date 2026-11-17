@@ -24,7 +24,7 @@ const CustomDialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg",
+        "fixed z-50 grid grid-cols-[minmax(0,1fr)] gap-4 overflow-x-hidden overflow-y-auto border bg-background p-5 pb-safe inset-x-0 bottom-0 max-h-[92dvh] rounded-t-xl border-b-0 shadow-[0_-12px_32px_-12px_rgb(0_0_0/0.25)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom duration-200 sm:inset-auto sm:left-1/2 sm:top-1/2 sm:w-[calc(100%-2rem)] sm:max-w-lg sm:-translate-x-1/2 sm:-translate-y-1/2 sm:max-h-[88dvh] sm:rounded-xl sm:border-b sm:p-6 sm:data-[state=open]:slide-in-from-bottom-0 sm:data-[state=closed]:slide-out-to-bottom-0 sm:data-[state=open]:zoom-in-95 sm:data-[state=closed]:zoom-out-95",
         className
       )}
       {...props}
@@ -61,7 +61,7 @@ const StockBadge = ({
         'shrink-0 rounded-full px-2.5 py-1 text-xs font-bold whitespace-nowrap ring-1 ring-white'
 
     if (loading && !summary) {
-        return <span className={`${pill} bg-slate-200 text-slate-600`}>Mengecek…</span>
+        return <span className={`${pill} bg-slate-200 text-muted-foreground`}>Mengecek…</span>
     }
     if (!summary) return null
 
@@ -79,7 +79,7 @@ const StockBadge = ({
         // "everything", so the badge says that; "3/5" is the number the customer
         // needs to decide whether the branch is worth picking.
         return (
-            <span className={`${pill} bg-emerald-600 text-white`}>
+            <span className={`${pill} bg-success text-white`}>
                 {available === total ? 'Tersedia' : `Tersedia ${available}/${total}`}
             </span>
         )
@@ -313,16 +313,16 @@ const AreaDialog = ({
                 <DialogHeader>
                     <DialogTitle>Pilih Lokasi Toko</DialogTitle>
                 </DialogHeader>
-                <div className='sticky top-0 bg-white z-10'>
+                <div className='sticky top-0 bg-card z-10'>
                     <Input placeholder='Cari lokasi toko' value={keyword} onChange={handleSearchChange} />
                     {summariesLoading && (
-                        <p className='mt-2 text-sm text-slate-500'>
+                        <p className='mt-2 text-sm text-muted-foreground'>
                             Mengecek ketersediaan barang di setiap cabang…
                         </p>
                     )}
                 </div>
                 {nothingAvailable && (
-                    <div className='rounded-md border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900'>
+                    <div className='rounded-md border border-warning/40 bg-warning-soft p-4 text-sm text-warning'>
                         <p className='font-medium'>
                             {allUnreachable
                                 ? 'Stok di cabang belum bisa dicek saat ini.'
@@ -344,7 +344,7 @@ const AreaDialog = ({
                     </div>
                 )}
                 {hiddenCount > 0 && visibleStores.length > 0 && (
-                    <p className='text-sm text-slate-500'>
+                    <p className='text-sm text-muted-foreground'>
                         {hiddenCount} cabang lain disembunyikan karena tidak punya satu
                         pun barang yang dipesan atau stoknya belum bisa dicek.
                     </p>
@@ -377,7 +377,7 @@ const AreaDialog = ({
                 {/* Hidden when there is nothing to pick: a permanently disabled
                     "Pilih" under an empty list reads as a broken dialog, and the
                     panel above already carries the way out. */}
-                <div className={`sticky bottom-0 bg-white z-10 ${nothingAvailable ? 'hidden' : ''}`}>
+                <div className={`sticky bottom-0 bg-card z-10 ${nothingAvailable ? 'hidden' : ''}`}>
                     <Button variant="destructive" className='w-full'
                         disabled={!selectedStore || summariesLoading}
                         onClick={() => {

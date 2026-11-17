@@ -29,7 +29,7 @@ const PickupStockNotice = ({ onChooseBranch }: { onChooseBranch?: () => void }) 
     // "all available" line — which is only true BECAUSE of the adjustment.
     // Leaving it unsaid would present a trimmed order as the whole cart.
     const adjustedNotice = adjusted > 0 && (
-        <div className="rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+        <div className="rounded-md border border-warning/40 bg-warning-soft p-3 text-sm text-warning">
             <div className="flex items-start gap-2">
                 <AlertCircleIcon className="mt-0.5 h-4 w-4 shrink-0" />
                 <p>
@@ -61,7 +61,7 @@ const PickupStockNotice = ({ onChooseBranch }: { onChooseBranch?: () => void }) 
 
     if (loading) {
         return (
-            <div className="flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 p-3 text-sm text-slate-600">
+            <div className="flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 p-3 text-sm text-muted-foreground">
                 <Loader2Icon className="h-4 w-4 shrink-0 animate-spin" />
                 <span>Mengecek ketersediaan barang di toko…</span>
             </div>
@@ -70,7 +70,7 @@ const PickupStockNotice = ({ onChooseBranch }: { onChooseBranch?: () => void }) 
 
     if (checkoutLines.length === 0) {
         return (
-            <div className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-900">
+            <div className="rounded-md border border-destructive/40 bg-accent p-3 text-sm text-destructive">
                 <div className="flex items-start gap-2">
                     <AlertCircleIcon className="mt-0.5 h-4 w-4 shrink-0" />
                     <p className="font-medium">
@@ -85,7 +85,7 @@ const PickupStockNotice = ({ onChooseBranch }: { onChooseBranch?: () => void }) 
 
     if (error) {
         return (
-            <div className="rounded-md border border-amber-300 bg-amber-50 p-3 text-sm">
+            <div className="rounded-md border border-warning/40 bg-warning-soft p-3 text-sm">
                 <div className="flex items-start gap-2 text-amber-900">
                     <AlertCircleIcon className="mt-0.5 h-4 w-4 shrink-0" />
                     <div className="flex-1">
@@ -120,7 +120,7 @@ const PickupStockNotice = ({ onChooseBranch }: { onChooseBranch?: () => void }) 
     return (
         <div className="space-y-2">
             {adjustedNotice}
-            <div className="rounded-md border border-red-300 bg-red-50 p-3 text-sm">
+            <div className="rounded-md border border-red-300 bg-accent p-3 text-sm">
                 <div className="flex items-start gap-2 text-red-900">
                     <AlertCircleIcon className="mt-0.5 h-4 w-4 shrink-0" />
                     <p className="font-medium">{stock.message}</p>
@@ -130,9 +130,9 @@ const PickupStockNotice = ({ onChooseBranch }: { onChooseBranch?: () => void }) 
                     {problems.map((item, index) => (
                         <li
                             key={`${item.productId}-${item.variationId ?? ""}-${index}`}
-                            className="flex items-start gap-2 rounded border border-red-200 bg-white p-2"
+                            className="flex items-start gap-2 rounded border border-red-200 bg-card p-2"
                         >
-                            <AlertCircleIcon className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
+                            <AlertCircleIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                             <div className="min-w-0">
                                 <p className="truncate font-medium text-slate-900">
                                     {item.name || "Barang di keranjang"}

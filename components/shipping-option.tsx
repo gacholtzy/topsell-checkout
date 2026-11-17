@@ -1,12 +1,8 @@
 "use client"
 import React from 'react'
-import { Button } from './ui/button'
-import { ChevronRightIcon, ChevronsUpDownIcon } from 'lucide-react'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible'
+import { cn } from '../lib/utils'
 import { useShipping } from '../context/shipping'
 import parse from 'html-react-parser'
-import { Card, CardContent } from './ui/card'
-import { Separator } from './ui/separator'
 import AddressModal from './address-modal'
 import { useAddress } from '../context/address'
 import { priceToIDR } from '../lib/helper'
@@ -16,7 +12,6 @@ import CourierOptions from './courier-options'
 import { shippingOptionDuration, shippingOptionLabel } from '../interface/shipping'
 
 const ShippingOption = () => {
-    const [open, setOpen] = React.useState(false)
     const [openDialog, setOpenDialog] = React.useState(false)
     // Set when the customer asks to change shop from the stock warning, so the
     // address modal hands them straight to the branch picker.
@@ -72,70 +67,92 @@ const ShippingOption = () => {
     //     // return areaSupportCityIds.includes(address.city.city_id);
     // }, [getAddresses()]);
 
+    // The methods that make sense for the address typed so far.
+    const visibleMethods = shippingMethods.filter(method => {
+        const address = getAddresses();
+        if (!address && isAddressSubmitted) {
+            // If no address, only show "Ambil di Toko" and "Diantar ke Alamat"
+            return method.title !== "Pengiriman Reguler";
+        }
+
+        // If address is within Topsell area, hide "Pengiriman Reguler"
+        if (isWithinTopsellArea && isAddressSubmitted) {
+            if (shippingCost !== null && shippingCost > 0) {
+                // Postal is in Topsell area, but shipping is not free (e.g. electronic rules).
+                // Keep regular shipping and store pickup, hide free-delivery option.
+                return method.title !== "Diantar ke Alamat";
+            }
+            return method.title !== "Pengiriman Reguler";
+        }
+        // return all method if address is not submitted
+        if (!isAddressSubmitted) {
+            return method.title !== "Pengiriman Reguler";
+        }
+        // // If address is outside Topsell area, only show "Pengiriman Reguler"
+        return method.title === "Pengiriman Reguler";
+    })
+
+    const priceNote = (method: { title: string }) =>
+        method.title === "Ambil di Toko"
+            ? (selectedStore?.name ? selectedStore.name : "")
+            : method.title === "Diantar ke Alamat"
+                ? (shippingCost && shippingCost > 0 ? priceToIDR(shippingCost || 0) : "Gratis ongkir")
+                : selectedShippingMethod
+                    ? (shippingCostLoading ? "Menghitung ongkos kirim…" : shippingCost && shippingCost > 0 ? priceToIDR(shippingCost || 0) : "Gratis ongkir")
+                    : ""
+
     return (
         <>
-            <Collapsible
-                open={open}
-                onOpenChange={setOpen}
-            >
-                <CollapsibleTrigger className='w-full flex justify-between items-center border rounded-md p-4 border-slate-300 text-left'>
-                    {selectedShippingMethod ?
-                        selectedStore && selectedShippingMethod.title === "Ambil di Toko" ?
-                            `${selectedShippingMethod.title} - ${selectedStore.name} - ${selectedStore.storeArea.name}`
-                            : selectedShippingMethod.title + deliverySummary()
-                        :
-                        "Pilih Metode Pengiriman"}
-                    <ChevronsUpDownIcon className='w-6 h-6' />
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                    {shippingMethods
-                        .filter(method => {
-                            const address = getAddresses();
-                            if (!address && isAddressSubmitted) {
-                                // If no address, only show "Ambil di Toko" and "Diantar ke Alamat"
-                                return method.title !== "Pengiriman Reguler";
-                            }
+            <div role='radiogroup' aria-label='Metode pengiriman' className='space-y-2'>
+                {visibleMethods.map((method) => {
+                    const active = selectedShippingMethod?.id === method.id
+                    const note = priceNote(method)
+                    return (
+                        <button
+                            type='button'
+                            role='radio'
+                            aria-checked={active}
+                            key={method.id ?? method.title}
+                            onClick={() => {
+                                if (selectShippingMethod) selectShippingMethod(method);
+                                setOpenDialog(true)
+                            }}
+                            className={cn(
+                                'flex w-full items-start gap-3 rounded-lg border p-3.5 text-left transition-colors',
+                                active ? 'border-primary bg-accent' : 'border-input bg-card hover:bg-secondary'
+                            )}
+                        >
+                            <span className={cn('mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2', active ? 'border-primary' : 'border-input')}>
+                                {active && <span className='h-2.5 w-2.5 rounded-full bg-primary' />}
+                            </span>
+                            <span className='min-w-0 flex-1'>
+                                <span className='flex flex-wrap items-baseline justify-between gap-x-3'>
+                                    <span className='text-sm font-semibold sm:text-base'>{method.title}</span>
+                                    {note && <span className={cn('text-sm font-semibold tabular-nums', note === 'Gratis ongkir' && 'text-success')}>{note}</span>}
+                                </span>
+                                <span className='mt-0.5 block text-sm text-muted-foreground'>{parse(method.description)}</span>
+                            </span>
+                        </button>
+                    )
+                })}
+            </div>
 
-                            // If address is within Topsell area, hide "Pengiriman Reguler"
-                            if (isWithinTopsellArea && isAddressSubmitted) {
-                                if (shippingCost !== null && shippingCost > 0) {
-                                    // Postal is in Topsell area, but shipping is not free (e.g. electronic rules).
-                                    // Keep regular shipping and store pickup, hide free-delivery option.
-                                    return method.title !== "Diantar ke Alamat";
-                                }
-                                return method.title !== "Pengiriman Reguler";
-                            }
-                            // return all method if address is not submitted
-                            if (!isAddressSubmitted) {
-                                return method.title !== "Pengiriman Reguler";
-                            }
-                            // // If address is outside Topsell area, only show "Pengiriman Reguler"
-                            return method.title === "Pengiriman Reguler";
-                        })
-                        .map((method, index) => (
-                            <div key={index} className='border-slate-300 p-4 cursor-pointer'
-                                onClick={() => {
-                                    if (selectShippingMethod) selectShippingMethod(method);
-                                    setOpen(false)
-                                    setOpenDialog(true)
-                                }}
-                            >
-                                <h3 className='text-lg font-semibold'>{method.title} {
-                                    method.title === "Ambil di Toko" ?
-                                        selectedStore?.name ? "- " + selectedStore?.name : ""
-                                        :
-                                        method.title === "Diantar ke Alamat" ? (shippingCost && shippingCost > 0 ? `- ${priceToIDR(shippingCost || 0)}` : " - GRATIS ONGKIR!") :
-                                            selectedShippingMethod ? (shippingCostLoading ? " - Menghitung Ongkos Kirim..." : shippingCost && shippingCost > 0 ? `- ${priceToIDR(shippingCost || 0)}` : " - GRATIS ONGKIR!") : ""
-                                }</h3>
-                                <p className='text-sm mb-6'>{parse(method.description)}</p>
-                                {
-                                    shippingMethods.length - 1 !== index && <Separator />
-                                }
-                            </div>
-                        ))
-                    }
-                </CollapsibleContent>
-            </Collapsible >
+            {/* The saved address / pickup shop, with a plain way to change it. */}
+            {selectedShippingMethod && (
+                <div className='mt-3'>
+                    <AddressModal
+                        open={openDialog}
+                        jumpToArea={jumpToArea}
+                        onOpenChange={(next) => {
+                            setOpenDialog(next)
+                            // Clear the shortcut once used, so opening the modal the
+                            // normal way still starts at the address step.
+                            if (!next) setJumpToArea(false)
+                        }}
+                    />
+                </div>
+            )}
+
             {/* Courier picker for deliveries, once an address is saved. Each row is
                 one Biteship service that is switched on in the dashboard. */}
             {selectedShippingMethod && selectedShippingMethod.title !== "Ambil di Toko" && isAddressSubmitted && (
@@ -153,16 +170,6 @@ const ShippingOption = () => {
                     />
                 </div>
             )}
-            <AddressModal
-                open={openDialog}
-                jumpToArea={jumpToArea}
-                onOpenChange={(next) => {
-                    setOpenDialog(next)
-                    // Clear the shortcut once used, so opening the modal the
-                    // normal way still starts at the address step.
-                    if (!next) setJumpToArea(false)
-                }}
-            />
         </>
     )
 }

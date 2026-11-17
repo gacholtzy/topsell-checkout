@@ -173,12 +173,12 @@ export function AddressSearch({
     if (value) {
         return (
             <div className={cn("flex flex-col", className)}>
-                <div className="border rounded-md p-3 bg-gray-50">
+                <div className="border rounded-md p-3 bg-secondary/60">
                     <div className="flex justify-between items-start">
                         <div className="flex-1">
                             <div className="flex items-center mb-1">
-                                <Check className="h-4 w-4 text-green-600 mr-2" />
-                                <span className="text-sm font-medium text-green-600">Alamat Terpilih</span>
+                                <Check className="h-4 w-4 text-success mr-2" />
+                                <span className="text-sm font-medium text-success">Alamat Terpilih</span>
                             </div>
                             <p className="text-sm text-gray-700 break-words">{value}</p>
                         </div>
@@ -186,7 +186,7 @@ export function AddressSearch({
                             type="button"
                             onClick={handleEdit}
                             disabled={disabled}
-                            className="ml-2 px-2 py-1 text-xs border rounded hover:bg-gray-100 text-gray-600"
+                            className="ml-2 px-2 py-1 text-xs border rounded hover:bg-secondary text-muted-foreground"
                         >
                             Ubah
                         </button>
@@ -201,8 +201,8 @@ export function AddressSearch({
         const districtLabel = [district.district_name || district.subdistrict_name, district.city_name, district.province_name].filter(Boolean).join(', ');
         return (
             <div className={cn("flex flex-col", className)}>
-                <div className="border rounded-md p-3">
-                    <div className="flex items-center justify-between mb-2">
+                <div className="rounded-xl border p-3">
+                    <div className="mb-2 flex min-w-0 items-center justify-between">
                         <div className="flex items-center text-sm text-gray-700 min-w-0">
                             <MapPin className="h-4 w-4 text-gray-400 mr-2 shrink-0" />
                             <span className="truncate">{districtLabel}</span>
@@ -210,9 +210,9 @@ export function AddressSearch({
                         <button
                             type="button"
                             onClick={handleEdit}
-                            className="ml-2 inline-flex items-center px-2 py-1 text-xs border rounded hover:bg-gray-100 text-gray-600"
+                            className="ml-2 inline-flex shrink-0 items-center whitespace-nowrap rounded-md border px-2 py-1 text-xs text-muted-foreground hover:bg-secondary"
                         >
-                            <ChevronLeft className="h-3 w-3 mr-1" /> Ganti kecamatan
+                            <ChevronLeft className="h-3 w-3 mr-1" /> Ganti
                         </button>
                     </div>
                     <p className="text-sm font-medium mb-2">Pilih kode pos</p>
@@ -230,7 +230,7 @@ export function AddressSearch({
                                     type="button"
                                     key={option.id}
                                     onClick={() => finish(option)}
-                                    className="border rounded-md px-2 py-1.5 text-sm hover:bg-gray-100 text-center"
+                                    className="rounded-lg border px-2 py-2 text-center text-sm hover:border-primary/40 hover:bg-accent"
                                 >
                                     {option.zip_code}
                                 </button>
@@ -256,9 +256,9 @@ export function AddressSearch({
                     className="w-full"
                 />
                 {isOpen && (
-                    <div className="absolute z-50 w-full mt-1 bg-white border rounded-md shadow-lg max-h-[320px] overflow-y-auto overscroll-contain">
+                    <div className="absolute z-50 w-full mt-1 bg-card border rounded-md shadow-lg max-h-[320px] overflow-y-auto overscroll-contain">
                         {results.length > 0 && (
-                            <div className="sticky top-0 bg-white border-b px-2 py-1 text-xs text-gray-500">
+                            <div className="sticky top-0 bg-card border-b px-2 py-1 text-xs text-muted-foreground">
                                 {results.length} kecamatan ditemukan{results.length > 8 ? ', gulir untuk melihat semua' : ''}
                             </div>
                         )}
@@ -274,7 +274,7 @@ export function AddressSearch({
                                     <button
                                         type="button"
                                         key={address.id || `${address.district_name}-${address.city_name}-${index}`}
-                                        className="w-full px-2 py-1.5 text-left hover:bg-gray-100 flex items-center text-sm"
+                                        className="w-full px-2 py-1.5 text-left hover:bg-secondary flex items-center text-sm"
                                         onClick={() => handleSelectDistrict(address)}
                                     >
                                         <MapPin className="mr-2 h-4 w-4 shrink-0 text-gray-400" />
@@ -284,7 +284,7 @@ export function AddressSearch({
                                     </button>
                                 ))
                             ) : (
-                                <div className="px-2 py-1.5 text-sm text-gray-500">
+                                <div className="px-2 py-1.5 text-sm text-muted-foreground">
                                     {keyword.trim().length < MIN_KEYWORD_LENGTH
                                         ? `Ketik minimal ${MIN_KEYWORD_LENGTH} karakter untuk mencari kecamatan`
                                         : error || "Tidak ada hasil ditemukan"}
@@ -294,7 +294,7 @@ export function AddressSearch({
                     </div>
                 )}
             </div>
-            <p className="mt-1 text-xs text-gray-500">Ketik nama kecamatan atau kota, pilih kecamatannya, lalu pilih kode pos.</p>
+            <p className="mt-1 text-xs text-muted-foreground">Ketik nama kecamatan atau kota, pilih kecamatannya, lalu pilih kode pos.</p>
         </div>
     );
 }

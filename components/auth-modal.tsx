@@ -471,14 +471,14 @@ export default function AuthModal({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
-      <div className="relative w-full max-w-md bg-white rounded-xl p-4 max-h-[90vh] overflow-y-auto">
+      <div className="relative w-full max-w-md bg-card rounded-xl p-4 max-h-[90vh] overflow-y-auto">
         {onClose && (
           <button
             onClick={onClose}
-            className="absolute top-2 right-2 z-[110] bg-gray-100 rounded-full p-1.5 shadow-sm hover:bg-gray-200 transition-colors"
+            className="absolute top-2 right-2 z-[110] bg-secondary rounded-full p-1.5 shadow-sm hover:bg-gray-200 transition-colors"
             aria-label="Tutup"
           >
-            <X className="h-5 w-5 text-gray-600" />
+            <X className="h-5 w-5 text-muted-foreground" />
           </button>
         )}
         <Tabs
@@ -498,15 +498,6 @@ export default function AuthModal({
           {/* Login Tab Content */}
           <TabsContent value="login">
             <Card className="relative">
-              <div className="absolute top-4 right-4 z-10">
-                <img
-                  src="/icons/login-watermark.svg"
-                  alt="Login"
-                  width={70}
-                  height={70}
-                  className="opacity-70 w-[50px] h-[50px] md:w-[70px] md:h-[70px]"
-                />
-              </div>
               <CardHeader>
                 <CardTitle className="text-2xl font-bold">
                   Login Akun Topsell
@@ -617,7 +608,7 @@ export default function AuthModal({
                     {!otpSent && (
                       <Button
                         type="submit"
-                        className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white flex items-center justify-center gap-2 font-bold text-lg h-12"
+                        className="w-full bg-[#12804a] hover:bg-[#0f6e3f] text-white flex items-center justify-center gap-2 font-bold text-base h-12"
                         size="lg"
                         disabled={isLoading || (!!turnstileSiteKey && !loginTurnstileToken)}
                       >
@@ -640,9 +631,9 @@ export default function AuthModal({
 
                     {otpSent && (
                       <>
-                        <Alert className="bg-blue-50 border-blue-200 mt-4">
-                          <AlertDescription className="text-blue-700 flex items-center gap-2">
-                            <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
+                        <Alert className="bg-secondary border-border mt-4">
+                          <AlertDescription className="text-foreground flex items-center gap-2">
+                            <CheckCircle className="h-5 w-5 text-success flex-shrink-0" />
                             <span>
                               OTP telah dikirim via WhatsApp. Silahkan masukkan
                               OTP di bawah ini.
@@ -689,7 +680,7 @@ export default function AuthModal({
                                                   ? handleOtpPaste
                                                   : undefined
                                               }
-                                              className="h-14 text-center text-xl font-bold w-full border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 rounded-md transition-all bg-white"
+                                              className="h-14 text-center text-xl font-bold w-full rounded-xl transition-all"
                                               type="text"
                                               inputMode="numeric"
                                               maxLength={1}
@@ -709,7 +700,7 @@ export default function AuthModal({
                             <Button
                               type="button"
                               onClick={otpForm.handleSubmit(onVerifyOtpSubmit)}
-                              className="w-full bg-[#DC2626] hover:bg-[#B91C1C] text-white font-bold text-lg h-12"
+                              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg h-12"
                               disabled={
                                 isLoading ||
                                 otpDigits.some((digit) => digit === "")
@@ -724,11 +715,11 @@ export default function AuthModal({
                             </Button>
 
                             <div className="mt-2 text-center">
-                              <h4 className="text-sm font-medium text-gray-600">
+                              <h4 className="text-sm font-medium text-muted-foreground">
                                 Kirim ulang kode OTP?
                               </h4>
                               {countdown > 0 && (
-                                <p className="text-xs text-gray-500 mt-1">
+                                <p className="text-xs text-muted-foreground mt-1">
                                   Tunggu {countdown} detik untuk kirim ulang
                                 </p>
                               )}
@@ -745,7 +736,7 @@ export default function AuthModal({
                               )}
                               <Button
                                 type="button"
-                                className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white flex items-center justify-center gap-2 font-bold text-lg h-12 mt-2"
+                                className="w-full bg-[#12804a] hover:bg-[#0f6e3f] text-white flex items-center justify-center gap-2 font-bold text-base h-12 mt-2"
                                 size="lg"
                                 disabled={
                                   isLoading ||
@@ -775,41 +766,12 @@ export default function AuthModal({
                       </>
                     )}
 
-                    <div
-                      className="mt-4 overflow-hidden rounded-xl shadow-lg bg-gradient-to-r from-blue-500 to-indigo-600 border border-blue-400/20 cursor-pointer hover:shadow-xl transition-all duration-300"
-                      onClick={switchToRegisterTab}
-                    >
-                      <div className="relative px-6 py-5">
-                        <div className="absolute top-0 right-0 -mt-6 -mr-8">
-                          <div className="opacity-20">
-                            <img
-                              src="/icons/announcement.svg"
-                              alt=""
-                              width={120}
-                              height={120}
-                              className="w-[120px] h-[120px] text-white"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0 p-2 bg-white/20 rounded-lg mr-4">
-                            <img
-                              src="/icons/announcement.svg"
-                              alt="Announcement"
-                              width={36}
-                              height={36}
-                              className="w-9 h-9 text-white"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="text-md font-bold text-white tracking-tight underline">
-                              Belum Punya Akun? Buat akun Sekarang!
-                            </h3>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    <p className="mt-5 text-center text-sm text-muted-foreground">
+                      Belum punya akun?{" "}
+                      <button type="button" onClick={switchToRegisterTab} className="font-semibold text-foreground underline underline-offset-4">
+                        Daftar sekarang
+                      </button>
+                    </p>
                   </form>
                 </Form>
               </CardContent>
@@ -819,15 +781,6 @@ export default function AuthModal({
           {/* Register Tab Content */}
           <TabsContent value="register">
             <Card className="relative">
-              <div className="absolute top-4 right-4 z-10">
-                <img
-                  src="/icons/user-watermark.svg"
-                  alt="Register"
-                  width={70}
-                  height={70}
-                  className="w-[70px] h-[70px] opacity-70"
-                />
-              </div>
               <CardHeader>
                 <CardTitle className="text-2xl font-bold">
                   Buat Akun Topsell
@@ -973,7 +926,7 @@ export default function AuthModal({
 
                     <Button
                       type="submit"
-                      className="w-full bg-[#DC2626] hover:bg-[#B91C1C] text-white font-bold text-lg h-12"
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg h-12"
                       disabled={isLoading || (!!turnstileSiteKey && !registerTurnstileToken)}
                       size="lg"
                     >

@@ -101,116 +101,103 @@ const TrackingPage = () => {
         return items
     }, [tracking])
 
+    const tone = tracking?.biteshipStatus ? (DONE_STATUSES.has(tracking.biteshipStatus) ? 'success' : PROBLEM_STATUSES.has(tracking.biteshipStatus) ? 'problem' : 'active') : 'idle'
+    const toneClass = {
+        success: 'bg-success-soft text-success',
+        problem: 'bg-accent text-destructive',
+        active: 'bg-secondary text-foreground',
+        idle: 'bg-secondary text-muted-foreground',
+    }[tone]
+
     return (
-        <div className="container mx-auto max-w-3xl px-4 py-6 space-y-4">
-            <div className="flex items-center justify-between">
-                <Button variant="ghost" size="sm" onClick={() => router.push('/order')} className="pl-0">
-                    <ArrowLeftIcon className="h-4 w-4 mr-1" /> Kembali ke Pesanan
+        <div className="mx-auto max-w-2xl px-4 pb-16 pt-5 sm:px-6 sm:pt-8">
+            <div className="mb-5 flex items-center justify-between gap-3">
+                <Button variant="ghost" size="sm" onClick={() => router.push('/order')} className="-ml-3">
+                    <ArrowLeftIcon /> Pesanan
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => load(true)} disabled={loading}>
-                    <RefreshCw className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`} /> Perbarui
+                    <RefreshCw className={loading ? 'animate-spin' : ''} /> Perbarui
                 </Button>
             </div>
 
-            <Card>
-                <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                        <Package className="h-5 w-5" /> Lacak Paket
-                    </CardTitle>
-                    <p className="text-sm text-gray-500">Invoice {invoice}</p>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    {loading ? (
-                        <div className="space-y-3">
-                            <Skeleton className="h-6 w-2/3" />
-                            <Skeleton className="h-4 w-1/2" />
-                            <Skeleton className="h-24 w-full" />
+            <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">Lacak paket</h1>
+            <p className="mt-1 text-sm text-muted-foreground">Invoice {invoice}</p>
+
+            {loading ? (
+                <div className="mt-6 space-y-3" role="status" aria-label="Memuat pelacakan">
+                    <Skeleton className="h-14 w-full" />
+                    <Skeleton className="h-32 w-full" />
+                </div>
+            ) : error ? (
+                <p className="mt-6 rounded-lg border border-destructive/40 bg-accent p-4 text-sm font-medium text-destructive" role="alert">
+                    {error}
+                </p>
+            ) : tracking ? (
+                <>
+                    <div className={`mt-6 rounded-lg px-4 py-4 sm:px-5 ${toneClass}`}>
+                        <p className="text-lg font-bold">{tracking.biteshipLabel || 'Menunggu kurir'}</p>
+                        {!tracking.biteshipStatus && (
+                            <p className="mt-0.5 text-sm">Pesanan sedang disiapkan gudang. Resi muncul setelah kurir menjemput.</p>
+                        )}
+                    </div>
+
+                    <dl className="mt-6 divide-y rounded-lg border bg-card text-sm">
+                        <div className="grid gap-1 p-4 sm:grid-cols-[9rem_1fr] sm:gap-4">
+                            <dt className="text-muted-foreground">Kurir</dt>
+                            <dd className="font-semibold">{[tracking.courierName, tracking.courierServiceName].filter(Boolean).join(' ') || '-'}</dd>
                         </div>
-                    ) : error ? (
-                        <div className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-                            {error}
+                        <div className="grid gap-1 p-4 sm:grid-cols-[9rem_1fr] sm:gap-4">
+                            <dt className="text-muted-foreground">No. resi</dt>
+                            <dd className="break-all font-semibold tabular-nums">{tracking.waybillId || 'Belum terbit'}</dd>
                         </div>
-                    ) : tracking ? (
-                        <>
-                            <div className="flex flex-wrap items-center gap-2">
-                                <Badge className={`${statusTone(tracking.biteshipStatus)} text-white`}>
-                                    {tracking.biteshipLabel || 'Menunggu kurir'}
-                                </Badge>
-                                {!tracking.biteshipStatus && (
-                                    <span className="text-sm text-gray-500">Pengiriman sedang disiapkan oleh gudang.</span>
-                                )}
+                        {(tracking.driverName || tracking.driverPhone) && (
+                            <div className="grid gap-1 p-4 sm:grid-cols-[9rem_1fr] sm:gap-4">
+                                <dt className="text-muted-foreground">Driver</dt>
+                                <dd>
+                                    <span className="font-semibold">{tracking.driverName}{tracking.driverPlateNumber ? ` · ${tracking.driverPlateNumber}` : ''}</span>
+                                    {tracking.driverPhone && (
+                                        <a href={`tel:${tracking.driverPhone}`} className="mt-1 flex items-center gap-1.5 font-medium text-primary underline underline-offset-4">
+                                            <Phone className="h-4 w-4" /> {tracking.driverPhone}
+                                        </a>
+                                    )}
+                                </dd>
                             </div>
-
-                            <div className="grid gap-3 sm:grid-cols-2 text-sm">
-                                <div className="rounded-md border p-3">
-                                    <div className="flex items-center gap-2 text-gray-500 mb-1"><Truck className="h-4 w-4" /> Kurir</div>
-                                    <div className="font-semibold">
-                                        {[tracking.courierName, tracking.courierServiceName].filter(Boolean).join(' ') || '-'}
-                                    </div>
-                                </div>
-                                <div className="rounded-md border p-3">
-                                    <div className="flex items-center gap-2 text-gray-500 mb-1"><Package className="h-4 w-4" /> No. Resi</div>
-                                    <div className="font-mono font-semibold break-all">{tracking.waybillId || 'Belum terbit'}</div>
-                                </div>
-                                {(tracking.driverName || tracking.driverPhone) && (
-                                    <div className="rounded-md border p-3 sm:col-span-2">
-                                        <div className="flex items-center gap-2 text-gray-500 mb-1"><User className="h-4 w-4" /> Driver</div>
-                                        <div className="font-semibold">{tracking.driverName}{tracking.driverPlateNumber ? ` · ${tracking.driverPlateNumber}` : ''}</div>
-                                        {tracking.driverPhone && (
-                                            <a href={`tel:${tracking.driverPhone}`} className="inline-flex items-center gap-1 text-blue-600 mt-1">
-                                                <Phone className="h-3.5 w-3.5" /> {tracking.driverPhone}
-                                            </a>
-                                        )}
-                                    </div>
-                                )}
-                                {tracking.destinationAddress && (
-                                    <div className="rounded-md border p-3 sm:col-span-2">
-                                        <div className="flex items-center gap-2 text-gray-500 mb-1"><MapPin className="h-4 w-4" /> Tujuan</div>
-                                        <div>{tracking.destinationAddress}</div>
-                                    </div>
-                                )}
+                        )}
+                        {tracking.destinationAddress && (
+                            <div className="grid gap-1 p-4 sm:grid-cols-[9rem_1fr] sm:gap-4">
+                                <dt className="text-muted-foreground">Tujuan</dt>
+                                <dd>{tracking.destinationAddress}</dd>
                             </div>
+                        )}
+                    </dl>
 
-                            <div>
-                                <h3 className="font-semibold mb-3">Riwayat Perjalanan</h3>
-                                {history.length === 0 ? (
-                                    <p className="text-sm text-gray-500 flex items-center gap-2">
-                                        <Clock className="h-4 w-4" /> Belum ada pembaruan dari kurir.
-                                    </p>
-                                ) : (
-                                    <ol className="relative border-l border-gray-200 ml-2">
-                                        {history.map((event, index) => (
-                                            <li key={`${event.updatedAt}-${index}`} className="mb-5 ml-5">
-                                                <span className={`absolute -left-[9px] flex h-4 w-4 items-center justify-center rounded-full ${index === 0 ? statusTone(event.status) : 'bg-gray-300'}`}>
-                                                    {DONE_STATUSES.has(event.status) && <CheckCircle className="h-3 w-3 text-white" />}
-                                                </span>
-                                                <div className={`text-sm ${index === 0 ? 'font-semibold' : 'text-gray-700'}`}>{event.label || event.status}</div>
-                                                {event.note && <div className="text-sm text-gray-600">{event.note}</div>}
-                                                <div className="text-xs text-gray-400 mt-0.5">{formatDate(event.updatedAt)}</div>
-                                            </li>
-                                        ))}
-                                    </ol>
-                                )}
-                            </div>
+                    <h2 className="mb-3 mt-8 text-lg font-bold">Riwayat perjalanan</h2>
+                    {history.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">Belum ada pembaruan dari kurir.</p>
+                    ) : (
+                        <ol className="relative ml-2 border-l">
+                            {history.map((event, index) => (
+                                <li key={`${event.updatedAt}-${index}`} className="mb-6 ml-6 last:mb-0">
+                                    <span className={`absolute -left-[7px] mt-1 h-3.5 w-3.5 rounded-full border-2 border-background ${index === 0 ? (DONE_STATUSES.has(event.status) ? 'bg-success' : PROBLEM_STATUSES.has(event.status) ? 'bg-destructive' : 'bg-primary') : 'bg-input'}`} aria-hidden="true" />
+                                    <p className={`text-sm ${index === 0 ? 'font-bold' : 'font-medium'}`}>{event.label || event.status}</p>
+                                    {event.note && <p className="text-sm text-muted-foreground">{event.note}</p>}
+                                    <p className="mt-0.5 text-xs text-muted-foreground tabular-nums">{formatDate(event.updatedAt)}</p>
+                                </li>
+                            ))}
+                        </ol>
+                    )}
 
-                            {tracking.link && (
-                                <Button asChild variant="outline" size="sm">
-                                    <a href={tracking.link} target="_blank" rel="noopener noreferrer">
-                                        <ExternalLink className="h-4 w-4 mr-1" /> Lihat di situs kurir
-                                    </a>
-                                </Button>
-                            )}
-                        </>
-                    ) : null}
-                </CardContent>
-            </Card>
+                    {tracking.link && (
+                        <Button asChild variant="outline" className="mt-6">
+                            <a href={tracking.link} target="_blank" rel="noopener noreferrer">
+                                <ExternalLink /> Buka di situs kurir
+                            </a>
+                        </Button>
+                    )}
+                </>
+            ) : null}
 
-            <div className="flex justify-center">
-                <WhatsappCsButton />
-            </div>
-            <p className="text-center text-xs text-gray-400">
-                <Link href="/order" className="underline">Semua pesanan</Link>
-            </p>
+            <WhatsappCsButton />
         </div>
     )
 }

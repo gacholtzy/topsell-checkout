@@ -110,8 +110,8 @@ const RedeemPage = () => {
     return (
       <div className="container mx-auto max-w-5xl px-4 py-8">
         <div className="text-center py-12">
-          <XCircle className="h-12 w-12 mx-auto mb-4 text-red-500" />
-          <p className="text-red-500 mb-4">{error}</p>
+          <XCircle className="h-12 w-12 mx-auto mb-4 text-primary" />
+          <p className="text-primary mb-4">{error}</p>
           <Button onClick={fetchData}>Coba Lagi</Button>
         </div>
       </div>
@@ -128,19 +128,19 @@ const RedeemPage = () => {
             <Button variant="ghost" size="icon"><ArrowLeft className="h-5 w-5" /></Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Tukar Poin</h1>
-            <p className="text-gray-600 text-sm">Tukarkan poin Anda dengan voucher belanja</p>
+            <h1 className="text-2xl font-bold text-foreground">Tukar Poin</h1>
+            <p className="text-muted-foreground text-sm">Tukarkan poin Anda dengan voucher belanja</p>
           </div>
         </div>
-        <div className="flex items-center gap-2 rounded-lg border bg-yellow-50 px-4 py-2">
-          <Star className="h-5 w-5 text-yellow-500" />
-          <span className="font-bold text-yellow-700">{activePoints.toLocaleString('id-ID')}</span>
-          <span className="text-sm text-gray-500">poin</span>
+        <div className="flex items-center gap-2 rounded-lg border bg-warning-soft px-4 py-2">
+          <Star className="h-5 w-5 text-warning" />
+          <span className="font-bold text-warning">{activePoints.toLocaleString('id-ID')}</span>
+          <span className="text-sm text-muted-foreground">poin</span>
         </div>
       </div>
 
       {items.length === 0 ? (
-        <div className="text-center py-16 text-gray-500">
+        <div className="text-center py-16 text-muted-foreground">
           <Gift className="h-12 w-12 mx-auto mb-4 opacity-50" />
           <p>Belum ada voucher yang bisa ditukar saat ini</p>
         </div>
@@ -159,8 +159,8 @@ const RedeemPage = () => {
                   <CardTitle className="text-lg mt-2">{item.name}</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1">
-                  <p className="text-2xl font-bold text-green-600">{priceToIDR(item.discountValue)}</p>
-                  <p className="text-sm text-gray-500 mt-1">Nilai potongan voucher</p>
+                  <p className="text-2xl font-bold text-success">{priceToIDR(item.discountValue)}</p>
+                  <p className="text-sm text-muted-foreground mt-1">Nilai potongan voucher</p>
                   {item.minTransaction > 0 && (
                     <p className="text-xs text-gray-400 mt-2">Min. transaksi {priceToIDR(item.minTransaction)}</p>
                   )}

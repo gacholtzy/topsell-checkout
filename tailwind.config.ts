@@ -9,6 +9,7 @@ export default {
   ],
   theme: {
   	extend: {
+  		fontFamily: { sans: ['var(--font-jakarta)', 'ui-sans-serif', 'system-ui', 'sans-serif'] },
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
@@ -40,6 +41,8 @@ export default {
   				DEFAULT: 'hsl(var(--destructive))',
   				foreground: 'hsl(var(--destructive-foreground))'
   			},
+  			success: { DEFAULT: 'hsl(var(--success))', soft: 'hsl(var(--success-soft))' },
+  			warning: { DEFAULT: 'hsl(var(--warning))', soft: 'hsl(var(--warning-soft))' },
   			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',
   			ring: 'hsl(var(--ring))',

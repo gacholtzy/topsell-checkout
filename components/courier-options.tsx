@@ -25,7 +25,7 @@ const CourierOptions = () => {
     }
 
     if (shippingOptionsError && shippingOptions.length === 0) {
-        return <p className='mt-3 text-sm text-red-600'>{shippingOptionsError}</p>
+        return <p className='mt-3 text-sm text-destructive'>{shippingOptionsError}</p>
     }
 
     if (shippingOptions.length === 0) return null
@@ -46,31 +46,31 @@ const CourierOptions = () => {
                             key={`${option.courierCode}-${option.courierServiceCode}`}
                             onClick={() => selectShippingOption(option)}
                             className={cn(
-                                'w-full flex items-center justify-between gap-3 rounded-md border p-3 text-left transition-colors',
-                                active ? 'border-red-500 bg-red-50' : 'border-slate-300 hover:bg-slate-50',
+                                'w-full flex items-center justify-between gap-3 rounded-xl border p-3 text-left transition-colors',
+                                active ? 'border-primary bg-accent ring-1 ring-primary/30' : 'border-input hover:bg-secondary/70',
                                 shippingOptionsLoading && 'opacity-60'
                             )}
                         >
                             <div className='flex items-center gap-3 min-w-0'>
-                                <span className={cn('flex h-5 w-5 shrink-0 items-center justify-center rounded-full border', active ? 'border-red-500 bg-red-500 text-white' : 'border-slate-400')}>
+                                <span className={cn('flex h-5 w-5 shrink-0 items-center justify-center rounded-full border', active ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground/40')}>
                                     {active && <Check className='h-3.5 w-3.5' />}
                                 </span>
                                 <div className='min-w-0'>
-                                    <div className='font-semibold flex items-center gap-2'>
-                                        <Truck className='h-4 w-4 text-slate-500 shrink-0' />
-                                        <span className='truncate'>{shippingOptionLabel(option)}</span>
+                                    <div className='flex items-start gap-2 text-sm font-semibold'>
+                                        <Truck className='mt-0.5 h-4 w-4 shrink-0 text-muted-foreground' />
+                                        <span className='break-words'>{shippingOptionLabel(option)}</span>
                                     </div>
-                                    {duration && <div className='text-xs text-gray-500'>Estimasi {duration}</div>}
+                                    {duration && <div className='text-xs text-muted-foreground'>Estimasi {duration}</div>}
                                 </div>
                             </div>
                             <div className='text-right shrink-0'>
                                 {option.price > 0 ? (
-                                    <span className='font-semibold'>{priceToIDR(option.price)}</span>
+                                    <span className='text-sm font-bold'>{priceToIDR(option.price)}</span>
                                 ) : (
-                                    <span className='font-semibold text-green-600'>GRATIS</span>
+                                    <span className='font-semibold text-success'>GRATIS</span>
                                 )}
                                 {option.price > 0 && option.listPrice > option.price && (
-                                    <div className='text-xs text-gray-400 line-through'>{priceToIDR(option.listPrice)}</div>
+                                    <div className='text-xs text-muted-foreground line-through'>{priceToIDR(option.listPrice)}</div>
                                 )}
                             </div>
                         </button>

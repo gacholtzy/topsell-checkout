@@ -161,7 +161,7 @@ const ManualPageContent = () => {
         toast({
             title: "Berhasil menyalin nomor rekening",
             description: "Silakan paste ke bank",
-            className: "bg-green-500 text-white"
+            className: "bg-success text-white"
         })
     }
 
@@ -192,245 +192,139 @@ const ManualPageContent = () => {
         return () => clearInterval(timer)
     }, [order])
 
+    // Which company receives the transfer depends on what was bought.
+    const hasElektronik = !!order?.products.some(product =>
+        product.categories?.some(category => category.name.toLowerCase() == "elektronik")
+    )
+    const hasSepedaListrik = !!order?.products.some(product =>
+        product.categories?.some(category => category.name.toLowerCase() == "sepeda listrik")
+    )
+    const bankAccounts = !hasElektronik && hasSepedaListrik
+        ? [
+            { bank: "BCA", holder: "PT Tri Kasih Karunia", number: "6105863636" },
+            { bank: "Mandiri", holder: "PT Tri Kasih Karunia", number: "1420500068878" },
+        ]
+        : [
+            { bank: "BCA", holder: "PT. Topsel Raharja Indonesia", number: "6105777721" },
+            { bank: "Mandiri", holder: "PT. Topsel Raharja Indonesia", number: "1420099191990" },
+        ]
+    const pad = (n: number) => String(n).padStart(2, '0')
+
     return (
-        <div className='container mx-auto max-w-7xl px-6 mb-12'>
+        <div className='mx-auto max-w-2xl px-4 pb-16 pt-6 sm:px-6 sm:pt-10'>
             {isLoading ? (
-                <div className="flex justify-center my-8">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                <div className="flex justify-center py-16" role="status" aria-label="Memuat pesanan">
+                    <span className="h-8 w-8 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
                 </div>
             ) : order?.status === "expired" ? (
-                <div className="flex flex-col items-center justify-center min-h-[60vh] py-12">
-                    <div className="bg-red-50 border-2 border-red-200 rounded-lg p-8 max-w-md w-full text-center">
-                        <div className="flex justify-center mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        <h1 className="text-3xl font-bold text-red-600 mb-4">Pesanan Kedaluwarsa</h1>
-                        <div className="space-y-4">
-                            <p className="text-lg text-gray-700">Pesanan dengan invoice <span className="font-semibold">{order.invoice}</span> telah kedaluwarsa karena melewati batas waktu pembayaran.</p>
-                            <div className="bg-red-100 p-4 rounded-md">
-                                <p className="text-red-800 font-medium">Silakan buat pesanan baru untuk melanjutkan belanja.</p>
-                            </div>
-                            <div className="mt-6 pt-4 border-t border-red-200">
-                                <p className="text-lg">Anda akan dialihkan ke halaman utama dalam</p>
-                                <div className="flex justify-center mt-2">
-                                    <div className="bg-red-500 text-white text-2xl font-bold rounded-lg p-3 min-w-[60px]">
-                                        {redirectCountdown}
-                                    </div>
-                                    <p className="self-center ml-2 text-lg">detik</p>
-                                </div>
-                            </div>
-                        </div>
-                        <Button 
-                            className="mt-6 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                            onClick={() => window.location.replace("https://topsellbelanja.com")}
-                        >
-                            Kembali ke Beranda
-                        </Button>
-                    </div>
+                <div className="rounded-lg border bg-card p-6 text-center sm:p-10">
+                    <h1 className="text-2xl font-extrabold tracking-tight">Pesanan kedaluwarsa</h1>
+                    <p className="mx-auto mt-3 max-w-md text-muted-foreground">
+                        Pesanan <span className="font-semibold text-foreground">{order.invoice}</span> melewati batas waktu pembayaran dan dibatalkan otomatis.
+                        Buat pesanan baru untuk melanjutkan belanja.
+                    </p>
+                    <p className="mt-6 text-sm text-muted-foreground" role="status">
+                        Kembali ke beranda dalam <span className="font-bold tabular-nums text-foreground">{redirectCountdown}</span> detik
+                    </p>
+                    <Button className="mt-4" size="lg" onClick={() => window.location.replace("https://topsellbelanja.com")}>
+                        Kembali ke beranda
+                    </Button>
                 </div>
             ) : (
                 <>
-                    <h1 className='text-2xl md:text-3xl font-bold text-center my-3'>Selesaikan pembayaran dalam</h1>
+                    <p className="text-sm font-semibold text-muted-foreground">Pesanan {order?.invoice}</p>
+                    <h1 className="mt-1 text-2xl font-extrabold tracking-tight sm:text-3xl">Selesaikan pembayaran</h1>
 
-                    {timeLeft ? (
-                        <div className="flex justify-center gap-4 my-8">
-                            <div className="flex flex-col items-center">
-                                <div className="bg-primary text-white text-2xl md:text-4xl font-bold rounded-lg p-4 min-w-[80px] text-center">
-                                    {String(timeLeft.hours).padStart(2, '0')}
-                                </div>
-                                <span className="text-sm mt-2">Jam</span>
+                    <div className="mt-6 rounded-lg border bg-card">
+                        <div className="flex flex-wrap items-center justify-between gap-3 border-b p-4 sm:p-6">
+                            <div>
+                                <p className="text-sm text-muted-foreground">Bayar sebelum</p>
+                                <p className="font-semibold">{deadline}</p>
                             </div>
-                            <div className="text-2xl md:text-4xl font-bold self-center">:</div>
-                            <div className="flex flex-col items-center">
-                                <div className="bg-primary text-white text-2xl md:text-4xl font-bold rounded-lg p-4 min-w-[80px] text-center">
-                                    {String(timeLeft.minutes).padStart(2, '0')}
-                                </div>
-                                <span className="text-sm mt-2">Menit</span>
-                            </div>
-                            <div className="text-2xl md:text-4xl font-bold self-center">:</div>
-                            <div className="flex flex-col items-center">
-                                <div className="bg-primary text-white text-2xl md:text-4xl font-bold rounded-lg p-4 min-w-[80px] text-center">
-                                    {String(timeLeft.seconds).padStart(2, '0')}
-                                </div>
-                                <span className="text-sm mt-2">Detik</span>
-                            </div>
+                            {timeLeft && (
+                                <p className="rounded-md bg-warning-soft px-3 py-2 text-lg font-extrabold tabular-nums text-warning" role="timer" aria-label="Sisa waktu pembayaran">
+                                    {pad(timeLeft.hours)}:{pad(timeLeft.minutes)}:{pad(timeLeft.seconds)}
+                                </p>
+                            )}
                         </div>
-                    ) : null}
-                    <h2 className="text-xl font-semibold mb-4 text-gray-500 text-center">Batas akhir pembayaran</h2>
-                    <p className="text-lg text-center font-bold">{deadline}</p>
-                    {order && (
-                        <div className="mt-8 p-6 border rounded-lg shadow-sm flex flex-col gap-4 w-full">
-                            <div className="flex items-start justify-between">
-                                <div className="flex flex-col gap-2">
-                                    <h2 className="text-xl font-semibold">Detail Pesanan</h2>
-                                    <p className="font-bold"><span className="font-medium">Invoice:</span> {order.invoice}</p>
-                                </div>
-                                <Badge variant="outline" className={`${order.status == "pending" ? "bg-yellow-500" : order.status == "paid" ? "bg-green-500" : "bg-red-500"} text-white`}>{order.status.toUpperCase()}</Badge>
+                        <div className="flex items-center justify-between gap-3 p-4 sm:p-6">
+                            <div>
+                                <p className="text-sm text-muted-foreground">Transfer tepat sebesar</p>
+                                <p className="text-2xl font-extrabold tabular-nums sm:text-3xl">{priceToIDR(order?.total || 0)}</p>
                             </div>
-                            <Separator />
-                            {
-                                order.products.map((product) => (
-                                    <div key={product.id} className="flex items-center justify-between px-4">
-                                        <div className="flex items-center gap-2">
-                                            <img src={product.images[0].src} alt={product.name} width={80} height={80} />
-                                            <p className="font-bold">{product.name} x {product.qty}</p>
-                                        </div>
-                                        <p className="font-bold">{priceToIDR(product.price)}</p>
-                                    </div>
-                                ))
-                            }
-                            <Separator />
-                            {
-                                order.ongkir > 0 && (
-                                    <div className="flex items-center justify-between px-4">
-                                        <p className="font-bold">Ongkos Kirim:</p>
-                                        <p className="font-bold">{priceToIDR(order.ongkir)}</p>
-                                    </div>
-                                )
-                            }
-                            {
-                                order.voucherID && (
-                                    <div className="flex items-center justify-between px-4">
-                                        <p className="font-bold">Voucher:</p>
-                                        <p className="font-bold text-red-500">- {priceToIDR(order?.voucherDiscount)}</p>
-                                    </div>
-                                )
-                            }
-                            <Separator />
-                            <div className="flex items-center justify-between px-4">
-                                <p className="font-bold">Total Pembayaran:</p>
-                                <p className="font-bold">{priceToIDR(order.total)}</p>
-                            </div>
-                        </div>
-                    )}
-                    <Separator />
-                    <div className="mt-8 p-6 border rounded-lg shadow-sm flex flex-col gap-4 w-full">
-                        <div className="flex flex-col gap-2">
-                            <h2 className="text-xl font-semibold">Transfer Bank</h2>
-                            <h3 className="text-gray-500">Pilih salah satu nomor rekening bank di bawah ini</h3>
-                        </div>
-                        <Separator />
-                        {order && (() => {
-                            // Check if any product has category "elektronik"
-                            const hasElektronik = order.products.some(product => 
-                                product.categories?.some(category => 
-                                    category.name.toLowerCase() == "elektronik".toLowerCase()
-                                )
-                            );
-                            
-                            // Check if any product has category "sepeda listrik"
-                            const hasSepedaListrik = order.products.some(product => 
-                                product.categories?.some(category => 
-                                    category.name.toLowerCase() == "sepeda listrik".toLowerCase()
-                                )
-                            );
-                            
-                            // Display appropriate bank accounts based on categories
-                            if (hasElektronik) {
-                                return (
-                                    <>
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex flex-col gap-2">
-                                                <p className="font-bold text-lg">BCA PT. Topsel Raharja Indonesia</p>
-                                                <p className="font-semibold text-gray-500">6105777721</p>
-                                            </div>
-                                            <Button variant="link" className="text-red-500 font-bold" onClick={() => copyToClipboard("6105777721")}>
-                                                <CopyIcon className="w-4 h-4" /> Salin
-                                            </Button>
-                                        </div>
-                                        <Separator />
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex flex-col gap-2">
-                                                <p className="font-bold text-lg">Mandiri PT. Topsel Raharja Indonesia</p>
-                                                <p className="font-semibold text-gray-500">1420099191990</p>
-                                            </div>
-                                            <Button variant="link" className="text-red-500 font-bold" onClick={() => copyToClipboard("1420099191990")}>
-                                                <CopyIcon className="w-4 h-4" /> Salin
-                                            </Button>
-                                        </div>
-                                    </>
-                                );
-                            } else if (hasSepedaListrik) {
-                                return (
-                                    <>
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex flex-col gap-2">
-                                                <p className="font-bold text-lg">BCA PT Tri Kasih Karunia</p>
-                                                <p className="font-semibold text-gray-500">6105863636</p>
-                                            </div>
-                                            <Button variant="link" className="text-red-500 font-bold" onClick={() => copyToClipboard("6105863636")}>
-                                                <CopyIcon className="w-4 h-4" /> Salin
-                                            </Button>
-                                        </div>
-                                        <Separator />
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex flex-col gap-2">
-                                                <p className="font-bold text-lg">Mandiri PT Tri Kasih Karunia</p>
-                                                <p className="font-semibold text-gray-500">1420500068878</p>
-                                            </div>
-                                            <Button variant="link" className="text-red-500 font-bold" onClick={() => copyToClipboard("1420500068878")}>
-                                                <CopyIcon className="w-4 h-4" /> Salin
-                                            </Button>
-                                        </div>
-                                    </>
-                                );
-                            } else {
-                                return (
-                                    <>
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex flex-col gap-2">
-                                                <p className="font-bold text-lg">BCA PT. Topsel Raharja Indonesia</p>
-                                                <p className="font-semibold text-gray-500">6105777721</p>
-                                            </div>
-                                            <Button variant="link" className="text-red-500 font-bold" onClick={() => copyToClipboard("6105777721")}>
-                                                <CopyIcon className="w-4 h-4" /> Salin
-                                            </Button>
-                                        </div>
-                                        <Separator />
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex flex-col gap-2">
-                                                <p className="font-bold text-lg">Mandiri PT. Topsel Raharja Indonesia</p>
-                                                <p className="font-semibold text-gray-500">1420099191990</p>
-                                            </div>
-                                            <Button variant="link" className="text-red-500" onClick={() => copyToClipboard("1420099191990")}>
-                                                <CopyIcon className="w-4 h-4" /> Salin
-                                            </Button>
-                                        </div>
-                                    </>
-                                );
-                            }
-                        })()}
-                        <Separator />
-                        <div className="flex items-center justify-between">
-                            <div className="flex flex-col gap-2">
-                                <p className="font-bold text-lg">Total Pembayaran:</p>
-                                <p className="font-bold">{priceToIDR(order?.total || 0)}</p>
-                            </div>
-                            <Button variant="link" className="text-red-500 font-bold" onClick={() => copyToClipboard(order?.total.toString() || "")}>
-                                <CopyIcon className="w-4 h-4" /> Salin
+                            <Button variant="outline" onClick={() => copyToClipboard(order?.total.toString() || "")}>
+                                <CopyIcon /> Salin
                             </Button>
                         </div>
                     </div>
-                    <div className="flex justify-center my-6">
-                        <Button className="my-4 text-2xl h-16 font-bold" variant="destructive" size="lg" onClick={() => window.location.replace("https://topsellbelanja.com")}>
-                            Lanjutkan Belanja
+
+                    <h2 className="mb-3 mt-8 text-lg font-bold">Transfer ke salah satu rekening</h2>
+                    <ul className="divide-y rounded-lg border bg-card">
+                        {bankAccounts.map((acc) => (
+                            <li key={acc.number} className="flex items-center justify-between gap-3 p-4 sm:p-5">
+                                <div className="min-w-0">
+                                    <p className="text-sm text-muted-foreground">{acc.bank} · {acc.holder}</p>
+                                    <p className="text-lg font-bold tabular-nums tracking-wide">{acc.number}</p>
+                                </div>
+                                <Button variant="outline" onClick={() => copyToClipboard(acc.number)}>
+                                    <CopyIcon /> Salin
+                                </Button>
+                            </li>
+                        ))}
+                    </ul>
+                    <p className="mt-3 text-sm text-muted-foreground">
+                        Setelah transfer, pesanan diproses otomatis saat pembayaran terkonfirmasi. Simpan bukti transfer sampai pesanan sampai.
+                    </p>
+
+                    {order && (
+                        <details className="group mt-8 rounded-lg border bg-card">
+                            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4 font-semibold sm:p-5">
+                                <span>Rincian pesanan</span>
+                                <span className="flex items-center gap-3">
+                                    <Badge variant="outline" className={order.status == "paid" ? "border-success text-success" : "border-warning text-warning"}>
+                                        {order.status == "pending" ? "Menunggu pembayaran" : order.status == "paid" ? "Dibayar" : order.status}
+                                    </Badge>
+                                    <span aria-hidden="true" className="text-muted-foreground transition-transform group-open:rotate-180">▾</span>
+                                </span>
+                            </summary>
+                            <div className="space-y-4 border-t p-4 sm:p-5">
+                                <ul className="space-y-3">
+                                    {order.products.map((product) => (
+                                        <li key={product.id} className="flex items-start justify-between gap-3">
+                                            <div className="flex min-w-0 items-center gap-3">
+                                                <img src={product.images[0].src} alt="" className="h-14 w-14 shrink-0 rounded-md border bg-secondary object-contain" />
+                                                <p className="text-sm font-medium">{product.name} <span className="whitespace-nowrap text-muted-foreground">× {product.qty}</span></p>
+                                            </div>
+                                            <p className="shrink-0 text-sm font-semibold tabular-nums">{priceToIDR(product.price)}</p>
+                                        </li>
+                                    ))}
+                                </ul>
+                                <dl className="space-y-2 border-t pt-4 text-sm">
+                                    {order.ongkir > 0 && (
+                                        <div className="flex justify-between"><dt className="text-muted-foreground">Ongkos kirim</dt><dd className="tabular-nums">{priceToIDR(order.ongkir)}</dd></div>
+                                    )}
+                                    {order.voucherID && (
+                                        <div className="flex justify-between text-success"><dt>Voucher</dt><dd className="font-semibold tabular-nums">- {priceToIDR(order?.voucherDiscount)}</dd></div>
+                                    )}
+                                    <div className="flex justify-between text-base font-bold"><dt>Total</dt><dd className="tabular-nums">{priceToIDR(order.total)}</dd></div>
+                                </dl>
+                            </div>
+                        </details>
+                    )}
+
+                    <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                        <Button asChild size="lg" className="sm:flex-1">
+                            <a href="https://links.topsellbelanja.com/konfirmasi-pesanan-tsb" target="_blank" rel="noopener noreferrer">
+                                Konfirmasi ke CS via WhatsApp
+                            </a>
+                        </Button>
+                        <Button variant="outline" size="lg" className="sm:flex-1" onClick={() => window.location.replace("https://topsellbelanja.com")}>
+                            Lanjut belanja
                         </Button>
                     </div>
-                    <Separator />
-                    <div className="flex justify-center my-6 max-w-xl mx-auto">
-                        <p className="text-gray-500 text-center">
-                            Apabila terjadi kesalahan pada detail di atas atau ingin melakukan
-                            perubahan data pesanan*. Anda dapat menghubungi Customer Service
-                            Viranda dengan klik tombol di bawah ini.
-                        </p>
-                    </div>
-                    <div className="flex justify-center my-6">
-                        <Link href="https://links.topsellbelanja.com/konfirmasi-pesanan-tsb" className="flex justify-center my-6 bg-green-500 p-4 rounded-lg h-16 items-center gap-2" target="_blank">
-                            <img src="/icons/whatsapp.svg" alt="WhatsApp" className="w-8 h-8" /> <span className="text-white font-bold">CS Viranda</span>
-                        </Link>
-                    </div>
+                    <p className="mt-4 text-sm text-muted-foreground">
+                        Ada kesalahan pada data pesanan atau ingin mengubahnya? Hubungi Customer Service lewat tombol di atas.
+                    </p>
                 </>
             )}
         </div>

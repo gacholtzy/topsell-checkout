@@ -157,7 +157,7 @@ const OrderPage = () => {
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'pending':
-                return 'bg-yellow-500'
+                return 'bg-warning-soft0'
             case 'proses':
                 return 'bg-blue-500'
             case 'sent':
@@ -212,222 +212,153 @@ const OrderPage = () => {
         })
     }
 
-    const OrderCard = ({ order }: { order: Order }) => (
-        <Card className="mb-4">
-            <CardHeader className="pb-3">
-                <div className="flex justify-between items-start">
-                    <div>
-                        <CardTitle className="text-lg font-semibold">
-                            #{order.invoice}
-                        </CardTitle>
-                        <div className="flex items-center text-sm text-gray-500 mt-1">
-                            <Calendar className="h-4 w-4 mr-1" />
-                            {formatDate(order.createdAt)}
-                        </div>
-                    </div>
-                    <Badge className={`${getStatusColor(order.status)} text-white`}>
-                        <div className="flex items-center gap-1">
-                            {getStatusIcon(order.status)}
-                            {getStatusLabel(order.status, order.shipping?.title)}
-                        </div>
-                    </Badge>
+    const statusTone = (status: string) => {
+        switch (status) {
+            case 'pending': return 'bg-warning-soft text-warning'
+            case 'complete': return 'bg-success-soft text-success'
+            case 'expired': return 'bg-secondary text-muted-foreground'
+            default: return 'bg-secondary text-foreground'
+        }
+    }
+
+    const OrderCard = ({ order }: { order: Order }) => {
+        const isPickup = order.shipping?.title === "Ambil di Toko"
+        return (
+        <article className="rounded-lg border bg-card">
+            <header className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2 border-b p-4 sm:px-6">
+                <div className="min-w-0">
+                    <h3 className="break-all text-base font-bold">{order.invoice}</h3>
+                    <p className="mt-0.5 text-sm text-muted-foreground">{formatDate(order.createdAt)}</p>
                 </div>
-            </CardHeader>
-            <CardContent>
-                <div className="space-y-3">
-                    {/* Order Items */}
-                    <div className="space-y-2">
-                        {order.products.map((item, index) => (
+                <span className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-sm font-semibold ${statusTone(order.status)}`}>
+                    {getStatusIcon(order.status)}
+                    {getStatusLabel(order.status, order.shipping?.title)}
+                </span>
+            </header>
 
-                            <div key={index} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                                <div className="flex items-center gap-2 mr-4">
-                                    <img src={item.images[0]?.src} alt={item.name} className="w-10 h-10 rounded-md" />
-                                </div>
-                                <div className="flex-1">
-                                    <p className="font-medium">{item.name}</p>
-                                    <div className='flex items-center justify-between'>
-                                        <p className="text-sm text-gray-500">Qty: {item.qty}</p>
-                                        <div className="text-right">
-                                            <p className="font-medium">{formatCurrency(Number(item.price) * item.qty)}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Order Summary */}
-                    <div className="border-t pt-3 space-y-2">
-                        {/* Subtotal */}
-                        <div className="flex justify-between items-center text-sm">
-                            <span className="text-gray-600">Subtotal</span>
-                            <span>{formatCurrency(order.products.reduce((sum, item) => sum + (Number(item.price) * item.qty), 0))}</span>
-                        </div>
-
-                        {/* Shipping Cost */}
-                        {order.ongkir !== undefined && (
-                            <div className="flex justify-between items-center text-sm">
-                                <span className="text-gray-600">Ongkir</span>
-                                <span>{formatCurrency(order.ongkir)}</span>
-                            </div>
-                        )}
-
-                        {/* Admin Fee */}
-                        {order.adminFee !== undefined && order.adminFee > 0 && (
-                            <div className="flex justify-between items-center text-sm">
-                                <span className="text-gray-600">Biaya Admin</span>
-                                <span>{formatCurrency(order.adminFee)}</span>
-                            </div>
-                        )}
-
-                        {/* Voucher Discount */}
-                        {order.voucherDiscount !== undefined && order.voucherDiscount > 0 && (
-                            <div className="flex justify-between items-center text-sm">
-                                <span className="text-green-600">Diskon Voucher</span>
-                                <span className="text-green-600">-{formatCurrency(order.voucherDiscount)}</span>
-                            </div>
-                        )}
-
-                        {/* Shipping Voucher Discount */}
-                        {order.shippingVoucherDiscount !== undefined && order.shippingVoucherDiscount > 0 && (
-                            <div className="flex justify-between items-center text-sm">
-                                <span className="text-green-600">Diskon Voucher Pengiriman</span>
-                                <span className="text-green-600">-{formatCurrency(order.shippingVoucherDiscount)}</span>
-                            </div>
-                        )}
-
-                        <div className="border-t pt-2">
-                            <div className="flex justify-between items-center">
-                                <div className="flex items-center text-sm text-gray-600">
-                                    <DollarSign className="h-4 w-4 mr-1" />
-                                    Total Pembayaran
-                                </div>
-                                <p className="text-lg font-bold text-green-600">
-                                    {formatCurrency(order.total)}
+            <div className="space-y-5 p-4 sm:px-6 sm:py-5">
+                <ul className="space-y-3">
+                    {order.products.map((item, index) => (
+                        <li key={index} className="flex gap-3">
+                            <img src={item.images[0]?.src} alt="" className="h-14 w-14 shrink-0 rounded-md border bg-secondary object-contain" />
+                            <div className="min-w-0 flex-1">
+                                <p className="text-sm font-semibold leading-snug">{item.name}</p>
+                                <p className="mt-0.5 flex justify-between gap-3 text-sm text-muted-foreground">
+                                    <span>{item.qty} barang</span>
+                                    <span className="font-semibold tabular-nums text-foreground">{formatCurrency(Number(item.price) * item.qty)}</span>
                                 </p>
                             </div>
-                        </div>
+                        </li>
+                    ))}
+                </ul>
+
+                <dl className="space-y-2 border-t pt-4 text-sm">
+                    <div className="flex justify-between gap-4">
+                        <dt className="text-muted-foreground">Subtotal</dt>
+                        <dd className="tabular-nums">{formatCurrency(order.products.reduce((sum, item) => sum + (Number(item.price) * item.qty), 0))}</dd>
                     </div>
-
-                    {/* Additional Info */}
-                    <div className="space-y-2">
-                        {order.address && (
-                            <div className="text-sm text-gray-600">
-                                <p><strong>Alamat Pengiriman:</strong> {order.address}</p>
-                            </div>
-                        )}
-
-                        {order.shipping && (
-                            <div className="text-sm text-gray-600">
-                                <p>
-                                    <strong>Metode Pengiriman:</strong> {order.shipping.title}
-                                    {order.shipping.title !== "Ambil di Toko" && (order.courierName || order.courierServiceName) && (
-                                        <> · {[order.courierName, order.courierServiceName].filter(Boolean).join(' ')}</>
-                                    )}
-                                </p>
-                                {order.shipping.title !== "Ambil di Toko" && order.biteshipStatusLabel && (
-                                    <p className="text-blue-700">{order.biteshipStatusLabel}</p>
-                                )}
-                            </div>
-                        )}
-
-                        {/* Booked at Biteship but the courier has not issued a resi yet:
-                            the tracking page already works, so offer it. */}
-                        {order.shipping?.title !== "Ambil di Toko" && !order.trackingNumber && order.biteshipTrackingID && (
-                            <div className="rounded-md border border-blue-200 bg-blue-50 p-3 text-sm text-gray-700 flex flex-wrap items-center justify-between gap-2">
-                                <span className="flex items-center gap-2"><Truck className="h-4 w-4 text-blue-600" /> Kurir sedang disiapkan, nomor resi menyusul.</span>
-                                <Button asChild size="sm" className="bg-red-500 hover:bg-red-600">
-                                    <Link href={`/tracking/${order.invoice}`}>Lacak Paket</Link>
-                                </Button>
-                            </div>
-                        )}
-
-                        {/* The resi only means something for a parcel that travels to an
-                            address. A pickup order has no courier, so it never shows one,
-                            whatever was typed into the dashboard. */}
-                        {order.shipping?.title !== "Ambil di Toko" && order.trackingNumber && (
-                            <div className="rounded-md border border-blue-200 bg-blue-50 p-3 text-sm text-gray-700">
-                                <div className="flex items-center gap-2">
-                                    <Truck className="h-4 w-4 text-blue-600" />
-                                    <strong>No. Resi{order.courierName ? ` (${order.courierName})` : ''}</strong>
-                                </div>
-                                <div className="mt-2 flex flex-wrap items-center gap-2">
-                                    <span className="font-mono text-base break-all">{order.trackingNumber}</span>
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={async () => {
-                                            // Customers paste the resi into the courier's own app.
-                                            try {
-                                                await navigator.clipboard.writeText(order.trackingNumber!)
-                                                toast({ title: 'Nomor resi disalin' })
-                                            } catch {
-                                                toast({ title: 'Gagal menyalin', description: 'Salin nomor resi secara manual.', variant: 'destructive' })
-                                            }
-                                        }}
-                                    >
-                                        Salin
-                                    </Button>
-                                    {order.trackingUrl && order.trackingUrl.startsWith('/') ? (
-                                        // Our own tracking page (Biteship shipments): same tab.
-                                        <Button asChild size="sm" className="bg-red-500 hover:bg-red-600">
-                                            <Link href={order.trackingUrl}>Lacak Paket</Link>
-                                        </Button>
-                                    ) : order.trackingUrl ? (
-                                        <Button asChild size="sm" className="bg-red-500 hover:bg-red-600">
-                                            <a href={order.trackingUrl} target="_blank" rel="noopener noreferrer">
-                                                Lacak
-                                            </a>
-                                        </Button>
-                                    ) : null}
-                                </div>
-                            </div>
-                        )}
-
-                        {order.paymentMethod && (
-                            <div className="text-sm text-gray-600 flex justify-between items-center">
-                                <div className="flex items-center gap-2">
-                                    <span><strong>Pembayaran:</strong></span>
-                                    <span className='flex items-center gap-2'>
-                                    <img src={order.paymentMethod.icon} alt={order.paymentMethod.name} className="w-10" />
-                                    {order.paymentMethod.name}
-                                    </span>
-                                </div>
-                            </div>
-                        )}
-
-                        {order.voucher && (
-                            <div className="text-sm text-gray-600">
-                                <p><strong>Voucher:</strong> {order.voucher.name}</p>
-                            </div>
-                        )}
-
-                        {order.shippingVoucher && (
-                            <div className="text-sm text-gray-600">
-                                <p><strong>Voucher Pengiriman:</strong> {order.shippingVoucher.name}</p>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Only an unpaid order can still be paid. */}
-                    {order.status === 'pending' && (
-                        <PaymentPanel order={order} loadedAt={pendingLoadedAt} />
+                    {order.ongkir !== undefined && (
+                        <div className="flex justify-between gap-4"><dt className="text-muted-foreground">Ongkos kirim</dt><dd className="tabular-nums">{formatCurrency(order.ongkir)}</dd></div>
                     )}
-                </div>
-            </CardContent>
-        </Card>
-    )
+                    {order.adminFee !== undefined && order.adminFee > 0 && (
+                        <div className="flex justify-between gap-4"><dt className="text-muted-foreground">Biaya admin</dt><dd className="tabular-nums">{formatCurrency(order.adminFee)}</dd></div>
+                    )}
+                    {order.voucherDiscount !== undefined && order.voucherDiscount > 0 && (
+                        <div className="flex justify-between gap-4 text-success"><dt>Diskon voucher</dt><dd className="font-semibold tabular-nums">-{formatCurrency(order.voucherDiscount)}</dd></div>
+                    )}
+                    {order.shippingVoucherDiscount !== undefined && order.shippingVoucherDiscount > 0 && (
+                        <div className="flex justify-between gap-4 text-success"><dt>Diskon ongkir</dt><dd className="font-semibold tabular-nums">-{formatCurrency(order.shippingVoucherDiscount)}</dd></div>
+                    )}
+                    <div className="flex items-baseline justify-between gap-4 border-t pt-3">
+                        <dt className="font-bold">Total pembayaran</dt>
+                        <dd className="text-lg font-extrabold tabular-nums">{formatCurrency(order.total)}</dd>
+                    </div>
+                </dl>
+
+                <dl className="grid gap-x-6 gap-y-2 text-sm sm:grid-cols-[9rem_1fr]">
+                    {order.address && (<><dt className="text-muted-foreground">Alamat</dt><dd>{order.address}</dd></>)}
+                    {order.shipping && (
+                        <>
+                            <dt className="text-muted-foreground">Pengiriman</dt>
+                            <dd>
+                                {order.shipping.title}
+                                {!isPickup && (order.courierName || order.courierServiceName) && (
+                                    <> · {[order.courierName, order.courierServiceName].filter(Boolean).join(' ')}</>
+                                )}
+                                {!isPickup && order.biteshipStatusLabel && (
+                                    <span className="block font-semibold">{order.biteshipStatusLabel}</span>
+                                )}
+                            </dd>
+                        </>
+                    )}
+                    {order.paymentMethod && (
+                        <>
+                            <dt className="text-muted-foreground">Pembayaran</dt>
+                            <dd className="flex items-center gap-2"><img src={order.paymentMethod.icon} alt="" className="h-5 w-8 object-contain" />{order.paymentMethod.name}</dd>
+                        </>
+                    )}
+                    {order.voucher && (<><dt className="text-muted-foreground">Voucher</dt><dd>{order.voucher.name}</dd></>)}
+                    {order.shippingVoucher && (<><dt className="text-muted-foreground">Voucher ongkir</dt><dd>{order.shippingVoucher.name}</dd></>)}
+                </dl>
+
+                {/* Booked with the courier but no resi yet: the tracking page already works. */}
+                {!isPickup && !order.trackingNumber && order.biteshipTrackingID && (
+                    <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-secondary px-4 py-3 text-sm">
+                        <span>Kurir sedang disiapkan. Nomor resi menyusul.</span>
+                        <Button asChild size="sm"><Link href={`/tracking/${order.invoice}`}>Lacak paket</Link></Button>
+                    </div>
+                )}
+
+                {/* A resi only means something for a parcel that travels to an address. */}
+                {!isPickup && order.trackingNumber && (
+                    <div className="rounded-lg bg-secondary px-4 py-3 text-sm">
+                        <p className="text-muted-foreground">No. resi{order.courierName ? ` · ${order.courierName}` : ''}</p>
+                        <div className="mt-1 flex flex-wrap items-center gap-2">
+                            <span className="break-all text-base font-bold tabular-nums">{order.trackingNumber}</span>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={async () => {
+                                    // Customers paste the resi into the courier's own app.
+                                    try {
+                                        await navigator.clipboard.writeText(order.trackingNumber!)
+                                        toast({ title: 'Nomor resi disalin' })
+                                    } catch {
+                                        toast({ title: 'Gagal menyalin', description: 'Salin nomor resi secara manual.', variant: 'destructive' })
+                                    }
+                                }}
+                            >
+                                Salin
+                            </Button>
+                            {order.trackingUrl && order.trackingUrl.startsWith('/') ? (
+                                // Our own tracking page (Biteship shipments): same tab.
+                                <Button asChild size="sm"><Link href={order.trackingUrl}>Lacak paket</Link></Button>
+                            ) : order.trackingUrl ? (
+                                <Button asChild size="sm"><a href={order.trackingUrl} target="_blank" rel="noopener noreferrer">Lacak</a></Button>
+                            ) : null}
+                        </div>
+                    </div>
+                )}
+
+                {/* Only an unpaid order can still be paid. */}
+                {order.status === 'pending' && (
+                    <PaymentPanel order={order} loadedAt={pendingLoadedAt} />
+                )}
+            </div>
+        </article>
+        )
+    }
 
     const OrderList = ({ orders, emptyMessage }: { orders: Order[], emptyMessage: string }) => (
-        <div>
+        <div className="space-y-4">
             {orders.length > 0 ? (
                 orders.map(order => (
                     <OrderCard key={order.id} order={order} />
                 ))
             ) : (
-                <div className="text-center py-8 text-gray-500">
-                    <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <div className="text-center py-8 text-muted-foreground">
+                    
                     <p>{emptyMessage}</p>
                 </div>
             )}
@@ -436,9 +367,9 @@ const OrderPage = () => {
 
     if (loading) {
         return (
-            <div className="container mx-auto max-w-4xl px-4 py-8">
+            <div className="mx-auto max-w-3xl px-4 pb-16 pt-6 sm:px-6 sm:pt-10">
                 <div className="flex justify-center items-center py-12">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                    <span className="h-8 w-8 animate-spin rounded-full border-2 border-foreground border-t-transparent" role="status" aria-label="Memuat" />
                 </div>
             </div>
         )
@@ -446,10 +377,10 @@ const OrderPage = () => {
 
     if (error) {
         return (
-            <div className="container mx-auto max-w-4xl px-4 py-8">
+            <div className="mx-auto max-w-3xl px-4 pb-16 pt-6 sm:px-6 sm:pt-10">
                 <div className="text-center py-12">
-                    <XCircle className="h-12 w-12 mx-auto mb-4 text-red-500" />
-                                            <p className="text-red-500 mb-4">{error}</p>
+                    
+                                            <p className="text-primary mb-4">{error}</p>
                         <button
                             onClick={() => {
                                 fetchOrderHistory("pending", pendingPage)
@@ -458,7 +389,7 @@ const OrderPage = () => {
                                 fetchOrderHistory("complete", completePage)
                                 fetchOrderHistory("expired", expiredPage)
                             }}
-                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            className="h-11 rounded-lg bg-primary px-4 font-semibold text-primary-foreground hover:bg-primary/90"
                         >
                             Coba Lagi
                         </button>
@@ -468,20 +399,20 @@ const OrderPage = () => {
     }
 
     return (
-        <div className="container mx-auto max-w-4xl px-4 py-8">
+        <div className="mx-auto max-w-3xl px-4 pb-16 pt-6 sm:px-6 sm:pt-10">
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Pesanan Saya</h1>
-                <p className="text-gray-600">Lacak dan kelola riwayat pesanan Anda</p>
-                <p className="mt-2 text-sm text-gray-600">
+                <h1 className="mb-2 text-2xl font-extrabold tracking-tight sm:text-3xl">Pesanan saya</h1>
+                <p className="text-muted-foreground">Lacak dan kelola riwayat pesanan Anda</p>
+                <p className="mt-2 text-sm text-muted-foreground">
                     Ada kendala dengan pesanan? Hubungi CS kami via{' '}
-                    <a href={CS_WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="font-semibold text-green-600 underline">
+                    <a href={CS_WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="font-semibold text-foreground underline underline-offset-4">
                         WhatsApp
                     </a>.
                 </p>
             </div>
             <div className="mb-8">
                 <Button
-                    asChild>
+                    asChild variant="outline" size="sm">
                     <Link href="/cart">
                         <ArrowLeftIcon className="h-4 w-4" />
                         Kembali ke Keranjang
@@ -490,7 +421,7 @@ const OrderPage = () => {
             </div>
 
             <Tabs defaultValue="pending" className="w-full">
-                <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 h-20 md:h-10">
+                <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 p-1.5">
                     <TabsTrigger value="pending" className="flex items-center gap-2">
                         <Clock className="h-4 w-4" />
                         Belum Bayar ({pendingTotal})

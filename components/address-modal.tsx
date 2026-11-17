@@ -284,33 +284,33 @@ const AddressModal = ({
                 open={open}
                 onOpenChange={onOpenChange}
             >
-                <DialogTrigger className='w-full'>
-                    {(selectedShippingMethod) && (<div
-                        className='w-full grid grid-cols-12 gap-4 border rounded-md p-4 border-slate-300 mt-4 cursor-pointer'
+                <DialogTrigger className='w-full text-left' asChild>
+                    <button
+                        type='button'
+                        className='flex w-full items-start gap-3 rounded-lg border border-dashed border-input bg-card p-3.5 text-left transition-colors hover:bg-secondary'
                     >
-                        {isAddressSubmitted && savedAddress && selectedShippingMethod ?
-                            <div className='col-span-10 space-y-3'>
-                                <div className='w-full min-w-full flex space-x-4'>
-                                    <Badge variant="destructive" className='h-8'>UTAMA</Badge>
-                                    <div className='flex flex-col md:flex-row items-start space-x-2'>
-                                        <h3 className='font-semibold'>Rumah {" "}</h3>
-                                        <h4 className='font-semibold'>{savedAddress.name}</h4>
-                                    </div>
-                                </div>
-                                <div className='flex flex-col items-start'>
-                                    <p>{savedAddress.address}</p>
-                                    <p className='text-sm text-gray-600'>{formatAddressArea(savedAddress)}</p>
-                                    <p>{savedAddress.email}</p>
-                                </div>
-                            </div>
-                            : <div className='col-span-10 text-left'>Tambah Alamat Pengiriman</div>}
-                        <div className='col-span-2 flex justify-end items-center'>
-                            <ChevronDownIcon className='w-6 h-6' />
-                        </div>
-                    </div>)}
+                        {isAddressSubmitted && savedAddress ? (
+                            <span className='min-w-0 flex-1 text-sm'>
+                                <span className='block text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
+                                    {selectedShippingMethod?.title === "Ambil di Toko" ? 'Data pembeli' : 'Dikirim ke'}
+                                </span>
+                                <span className='mt-1 block font-semibold'>{savedAddress.name} <span className='font-normal text-muted-foreground'>· {savedAddress.phone}</span></span>
+                                <span className='mt-0.5 block'>{savedAddress.address}</span>
+                                <span className='block text-muted-foreground'>{formatAddressArea(savedAddress)}</span>
+                            </span>
+                        ) : (
+                            <span className='min-w-0 flex-1 text-sm'>
+                                <span className='block font-semibold'>Isi data pembeli dan alamat</span>
+                                <span className='block text-muted-foreground'>Dibutuhkan untuk menghitung ongkos kirim.</span>
+                            </span>
+                        )}
+                        <span className='shrink-0 text-sm font-semibold text-primary underline underline-offset-4'>
+                            {isAddressSubmitted && savedAddress ? 'Ubah' : 'Isi'}
+                        </span>
+                    </button>
                 </DialogTrigger>
                 <DialogContent
-                    className='overflow-y-scroll max-h-[90vh]'
+                    className='max-h-[90dvh]'
                 >
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(handleSubmit)}>
@@ -382,7 +382,7 @@ const AddressModal = ({
                                                         setArea(null);
                                                     }}
                                                     onSelect={handleAddressSelect}
-                                                    placeholder="Cari kecamatan (contoh: Bangsal, Mojokerto)"
+                                                    placeholder="Cari kecamatan atau kota"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -404,7 +404,7 @@ const AddressModal = ({
                                 />
                             </div>
                             <DialogDescription />
-                            <DialogFooter className='pt-6'>
+                            <DialogFooter className="gap-2 pt-4 sm:gap-0">
                                 <Button variant="outline" onClick={() => {
                                     onOpenChange(false)
                                     // Revert to the saved address and clear all errors

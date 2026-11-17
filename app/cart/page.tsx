@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Recommendations } from "@/components/cart/recommendations";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/useAuthStore";
 import { useToast } from "@/hooks/use-toast";
@@ -380,15 +382,19 @@ export default function CartPage() {
     }
   };
 
+  const authModal = (
+    <AuthModal open={showAuthModal} onAuthenticated={handleAuthenticated} onClose={() => setShowAuthModal(false)} />
+  );
+
   if (loading || processingPending) {
     return (
       <>
-        <AuthModal open={showAuthModal} onAuthenticated={handleAuthenticated} onClose={() => setShowAuthModal(false)} />
-        <div className="flex flex-col justify-center items-center min-h-screen">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary"></div>
-          {processingPending && (
-            <p className="mt-4 text-lg text-gray-600">Menambahkan produk ke keranjang...</p>
-          )}
+        {authModal}
+        <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3" role="status">
+          <span className="h-8 w-8 animate-spin rounded-full border-2 border-foreground border-t-transparent" aria-hidden="true" />
+          <p className="text-sm text-muted-foreground">
+            {processingPending ? "Menambahkan produk ke keranjang…" : "Memuat keranjang…"}
+          </p>
         </div>
       </>
     );
@@ -397,419 +403,211 @@ export default function CartPage() {
   if (!cart || !cart.items?.length) {
     return (
       <>
-        <AuthModal open={showAuthModal} onAuthenticated={handleAuthenticated} onClose={() => setShowAuthModal(false)} />
-        <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-6">Keranjang Anda</h1>
-        <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center">
-          <ShoppingCartIcon className="w-16 h-16 text-gray-400 mb-4" />
-          <h2 className="text-xl font-semibold mb-2">
-            {isAuthenticated ? "Keranjang Anda kosong" : "Anda belum login"}
-          </h2>
-          <p className="text-gray-500 mb-6">
-            {isAuthenticated
-              ? "Sepertinya Anda belum menambahkan item apapun ke keranjang."
-              : "Silakan login terlebih dahulu untuk melihat keranjang belanja Anda."}
-          </p>
-          {isAuthenticated ? (
-            <Link
-              href="https://topsellbelanja.com"
-              className="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
-            >
-              Lanjutkan Belanja
-            </Link>
-          ) : (
-            <button
-              onClick={() => setShowAuthModal(true)}
-              className="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
-            >
-              Login
-            </button>
-          )}
-        </div>
-
-        <div className="mt-10">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xl font-semibold">Rekomendasi Untuk Anda</h2>
-          </div>
-          {recoLoading ? (
-            <div className="flex justify-center py-8">
-              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary"></div>
-            </div>
-          ) : recommendations.length > 0 ? (
-            <Carousel className="rounded-md overflow-hidden relative">
-              <CarouselContent className="[&>div>div]:items-stretch">
-                {recommendations.map((p, idx) => (
-                  <CarouselItem key={`${p.slug}-${idx}`} className="basis-1/2 md:basis-1/3 lg:basis-1/4 pt-4">
-                    <div className="border rounded-lg bg-white h-full flex flex-col relative">
-                      {
-                        (p.regularPrice && Number(p.regularPrice) > 0) && (p.regularPrice !== p.price) &&
-                        <div className="absolute left-0 -top-3 z-[99999]">
-                          <span className="inline-flex items-center gap-1 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-sm">
-                            Hemat {priceToIDR(parseFloat(p.regularPrice) - parseFloat(p.price))}
-                          </span>
-                        </div>
-                      }
-                      <div className="aspect-[16/9] bg-gray-100 flex-shrink-0">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={p.thumbnail || "/images/placeholder-image.svg"} alt={p.name} className="w-full h-full object-cover" />
-                      </div>
-                      <div className="p-3 space-y-2 flex flex-col justify-between h-full">
-                        <div className="line-clamp-2 font-medium text-sm">{p.name}</div>
-                        <div className="flex flex-col items-start gap-2">
-                          {(p.regularPrice && Number(p.regularPrice) > 0) && (p.regularPrice !== p.price) && (
-                            <span className="text-xs line-through">Rp {Number(p.regularPrice).toLocaleString("id-ID")}</span>
-                          )}
-                          <span className="font-bold text-red-500">Rp {Number(p.price || 0).toLocaleString("id-ID")}</span>
-                        </div>
-                        <div className="mt-auto pt-2">
-                          <Link
-                            href={`https://topsellbelanja.com/product/${p.slug}`}
-                            target="_blank"
-                            className="inline-flex items-center justify-center w-full py-2 px-3 bg-[#03445f] text-white text-sm rounded hover:bg-[#03445f]"
-                          >
-                            Info Pemesanan
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              {recommendations.length > 1 && (
-                <>
-                  <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-black text-white hover:text-white rounded-full p-2 hover:bg-black/80 hidden lg:block" />
-                  <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-black text-white hover:text-white rounded-full p-2 hover:bg-black/80 hidden lg:block" />
-                </>
+        {authModal}
+        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+          <h1 className="mb-6 text-2xl font-extrabold tracking-tight sm:text-3xl">Keranjang</h1>
+          <div className="rounded-lg border bg-card px-6 py-12 text-center">
+            <h2 className="text-lg font-bold">
+              {isAuthenticated ? "Keranjang Anda masih kosong" : "Masuk untuk melihat keranjang"}
+            </h2>
+            <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
+              {isAuthenticated
+                ? "Pilih produk di toko, lalu tekan tombol beli. Produknya akan muncul di sini."
+                : "Keranjang tersimpan di akun Anda. Login dengan nomor WhatsApp untuk melanjutkan."}
+            </p>
+            <div className="mt-6">
+              {isAuthenticated ? (
+                <Button asChild size="lg">
+                  <Link href="https://topsellbelanja.com">Lihat produk</Link>
+                </Button>
+              ) : (
+                <Button size="lg" onClick={() => setShowAuthModal(true)}>Login</Button>
               )}
-            </Carousel>
-          ) : (
-            <div className="text-sm text-gray-500">Tidak ada rekomendasi saat ini.</div>
-          )}
+            </div>
+          </div>
+          <Recommendations items={recommendations} loading={recoLoading} />
         </div>
-      </div>
       </>
     );
   }
 
+  const selectedCount = getSelectedItemCount();
+  const selectedTotal = calculateSelectedTotal();
+
   return (
     <>
-    <AuthModal open={showAuthModal} onAuthenticated={handleAuthenticated} onClose={() => setShowAuthModal(false)} />
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex md:flex-row flex-col justify-between md:items-center mb-6">
-        <h1 className="text-2xl font-bold">Keranjang Anda</h1>
-        <div className="flex justify-end">
-          <button
-            className="px-4 py-2 text-red-600 border border-red-600 rounded-md hover:bg-red-50 flex items-center transition-colors duration-200 md:mt-0 mt-4"
-            onClick={handleClearCart}
-            disabled={clearingCart}
-          >
-            <Trash2Icon className="w-4 h-4 mr-2" />
-            Kosongkan Keranjang
-            {clearingCart && (
-              <div className="ml-2 animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-red-600"></div>
-            )}
-          </button>
+      {authModal}
+      <div className="mx-auto max-w-6xl px-4 pb-32 pt-5 sm:px-6 sm:pt-8 lg:pb-12">
+        <div className="mb-6 flex items-end justify-between gap-4">
+          <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
+            Keranjang <span className="text-lg font-semibold text-muted-foreground">({cart.items.length})</span>
+          </h1>
+          <Button variant="ghost" size="sm" onClick={handleClearCart} disabled={clearingCart} className="text-muted-foreground hover:text-destructive">
+            <Trash2Icon />
+            {clearingCart ? "Mengosongkan…" : "Kosongkan"}
+          </Button>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 order-1 lg:order-1">
-          <div className="bg-white rounded-xl shadow-md overflow-hidden">
-            <div className="p-5 border-b flex justify-between items-center bg-gray-50">
-              <h2 className="text-lg font-semibold">Item ({cart.items.length})</h2>
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="select-all"
-                  checked={selectAll}
-                  onChange={toggleSelectAll}
-                  className="w-5 h-5 mr-2 cursor-pointer accent-primary rounded"
-                />
-                <label htmlFor="select-all" className="text-sm font-medium cursor-pointer">Pilih Semua</label>
-              </div>
+        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-10">
+          <div className="rounded-lg border bg-card">
+            <div className="flex items-center gap-3 border-b px-4 py-3 sm:px-6">
+              <input
+                type="checkbox"
+                id="select-all"
+                checked={selectAll}
+                onChange={toggleSelectAll}
+                className="h-5 w-5 cursor-pointer accent-primary"
+              />
+              <label htmlFor="select-all" className="cursor-pointer text-sm font-semibold">
+                Pilih semua
+              </label>
             </div>
 
-            <div>
-              {cart.items.map((item, index) => (
-                <div
-                  key={item.id}
-                  className={`p-5 ${index < cart.items.length - 1 ? 'border-b' : ''} 
-                    ${item.stock <= 0 ? 'bg-gray-50' : 'hover:bg-gray-50'} 
-                    transition-colors duration-200 ease-in-out`}
-                >
-                  <div className="flex items-start">
-                    <div className="flex items-center mr-4 pt-2">
-                      <input
-                        type="checkbox"
-                        id={`item-${item.id}`}
-                        checked={!!selectedItems[item.id]}
-                        onChange={() => toggleItemSelection(item.id)}
-                        disabled={item.stock <= 0}
-                        className={`w-5 h-5 cursor-pointer accent-primary rounded
-                          ${item.stock <= 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                      />
-                    </div>
+            <ul className="divide-y">
+              {cart.items.map((item) => {
+                const soldOut = item.stock <= 0;
+                const busy = updatingItem === item.id;
+                return (
+                  <li key={item.id} className={`flex gap-3 px-4 py-5 sm:gap-4 sm:px-6 ${soldOut ? "bg-secondary/50" : ""}`}>
+                    <input
+                      type="checkbox"
+                      id={`item-${item.id}`}
+                      aria-label={`Pilih ${item.name}`}
+                      checked={!!selectedItems[item.id]}
+                      onChange={() => toggleItemSelection(item.id)}
+                      disabled={soldOut}
+                      className="mt-1 h-5 w-5 shrink-0 cursor-pointer accent-primary disabled:cursor-not-allowed disabled:opacity-40"
+                    />
 
-                    <div className="flex-shrink-0 w-16 h-16 md:w-28 md:h-28 mr-5 relative overflow-hidden rounded-lg">
+                    <div className={`relative h-20 w-20 shrink-0 sm:h-24 sm:w-24 ${soldOut ? "opacity-60" : ""}`}>
                       {item.images && item.images.length > 0 ? (
                         <img
                           src={getImageSrc(item.images[0])}
                           alt={getImageAlt(item.images[0], item.name)}
-                          className="object-cover w-full h-full"
+                          className="h-full w-full rounded-md border bg-secondary object-contain"
                         />
                       ) : (
-                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                          <span className="text-gray-400">Tidak Ada Gambar</span>
-                        </div>
-                      )}
-                      {item.stock <= 0 && (
-                        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center backdrop-blur-[2px]">
-                          <span className="bg-red-500 text-white px-3 py-1.5 text-xs font-bold rounded-full">Stock Habis</span>
+                        <div className="flex h-full w-full items-center justify-center rounded-md border bg-secondary text-xs text-muted-foreground">
+                          Tanpa foto
                         </div>
                       )}
                     </div>
 
-                    <div className="flex-grow">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="font-medium text-sm md:text-lg">{item.name}</h3>
-                        </div>
-                        <button
-                          className={`text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-gray-100 transition-colors duration-200`}
-                          onClick={() => {
-                            if (item.id) {
-                              handleRemoveItem(item.id);
-                            } else {
-                              toast({
-                                title: "Error",
-                                description: "Item ID tidak ditemukan",
-                                variant: "destructive",
-                              });
-                            }
-                          }}
-                          disabled={updatingItem === item.id || !item.id}
-                        >
-                          <Trash2Icon className="w-5 h-5" />
-                        </button>
-                      </div>
+                    <div className="min-w-0 flex-1">
+                      <h2 className="text-sm font-semibold leading-snug sm:text-base">{item.name}</h2>
+                      <p className={`mt-1 text-sm font-medium ${soldOut ? "text-destructive" : "text-muted-foreground"}`}>
+                        {soldOut ? "Stok habis. Hapus dari keranjang atau tunggu restock." : `Stok tersedia: ${item.stock}`}
+                      </p>
 
-                      {item.stock <= 0 ? (
-                        <p className="text-red-500 text-sm font-semibold mt-2 inline-block px-2 py-1 bg-red-50 rounded-md">Stok Habis</p>
-                      ) : (
-                        <p className="text-green-600 text-sm mt-2 inline-block px-2 py-1 bg-green-50 rounded-md">Stok: {item.stock}</p>
-                      )}
-
-                      <div className="mt-4 flex justify-between items-center md:flex-row flex-col-reverse">
-                        <div className="flex items-center md:mt-0 mt-4">
+                      <div className="mt-3 flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
+                        <div className="flex items-center" role="group" aria-label={`Jumlah ${item.name}`}>
                           <button
-                            className={`w-8 h-8 flex items-center justify-center rounded-md border ${item.qty <= 1 ? 'bg-gray-100 text-gray-400' : 'hover:bg-gray-100'} transition-colors duration-200 ${item.stock <= 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            type="button"
+                            aria-label="Kurangi jumlah"
+                            className="flex h-11 w-11 items-center justify-center rounded-l-lg border border-input bg-card transition-colors hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-40 md:h-10 md:w-10"
                             onClick={() => handleUpdateQuantity(item.id, item.qty - 1)}
-                            disabled={!!updatingItem || item.stock <= 0 || item.qty <= 1}
+                            disabled={!!updatingItem || soldOut || item.qty <= 1}
                           >
-                            <MinusIcon className="w-4 h-4" />
+                            <MinusIcon className="h-4 w-4" />
                           </button>
-                          <div className="mx-3 px-3 py-1 border rounded-md w-12 text-center">
+                          <span className="flex h-11 w-12 items-center justify-center border-y border-input bg-card text-sm font-bold tabular-nums md:h-10" aria-live="polite">
                             {item.qty}
-                          </div>
+                          </span>
                           <button
-                            className={`w-8 h-8 flex items-center justify-center rounded-md border hover:bg-gray-100 transition-colors duration-200 ${item.stock <= 0 || item.qty >= item.stock ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            type="button"
+                            aria-label="Tambah jumlah"
+                            className="flex h-11 w-11 items-center justify-center rounded-r-lg border border-input bg-card transition-colors hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-40 md:h-10 md:w-10"
                             onClick={() => handleUpdateQuantity(item.id, item.qty + 1)}
-                            disabled={!!updatingItem || item.stock <= 0 || item.qty >= item.stock}
+                            disabled={!!updatingItem || soldOut || item.qty >= item.stock}
                           >
-                            <PlusIcon className="w-4 h-4" />
+                            <PlusIcon className="h-4 w-4" />
                           </button>
                         </div>
 
                         <div className="text-right">
-                          <p className="font-semibold text-lg">
-                            {priceToIDR(parseFloat(item.price) * item.qty)}
-                          </p>
                           {item.regularPrice && parseFloat(item.regularPrice) > 0 && (
-                            <p className="text-sm text-gray-500 line-through">
+                            <p className="text-xs text-muted-foreground line-through tabular-nums">
                               {priceToIDR(parseFloat(item.regularPrice) * item.qty)}
                             </p>
                           )}
+                          <p className="text-base font-bold tabular-nums sm:text-lg">
+                            {priceToIDR(parseFloat(item.price) * item.qty)}
+                          </p>
                         </div>
                       </div>
-                    </div>
 
-                    {updatingItem === item.id && (
-                      <div className="ml-2 animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-primary"></div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+                      <div className="mt-2 flex items-center gap-3">
+                        <button
+                          type="button"
+                          className="-ml-1 inline-flex h-10 items-center gap-1.5 rounded-md px-1 text-sm font-medium text-muted-foreground transition-colors hover:text-destructive disabled:opacity-50"
+                          onClick={() => {
+                            if (item.id) {
+                              handleRemoveItem(item.id);
+                            } else {
+                              toast({ title: "Error", description: "Item ID tidak ditemukan", variant: "destructive" });
+                            }
+                          }}
+                          disabled={busy || !item.id}
+                        >
+                          <Trash2Icon className="h-4 w-4" />
+                          Hapus
+                        </button>
+                        {busy && <span className="h-4 w-4 animate-spin rounded-full border-2 border-foreground border-t-transparent" role="status" aria-label="Memperbarui" />}
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
-        </div>
 
-        {/* Mobile-only Recommendations inside grid above summary */}
-        <div className="order-2 md:hidden">
-          <div className="mt-0">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-xl font-semibold">Rekomendasi Untuk Anda</h2>
-            </div>
-            {recoLoading ? (
-              <div className="flex justify-center py-8">
-                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary"></div>
+          <aside aria-label="Ringkasan keranjang" className="hidden rounded-lg border bg-card p-6 lg:sticky lg:top-6 lg:block">
+            <h2 className="text-base font-bold">Ringkasan</h2>
+            <dl className="mt-4 space-y-2.5 text-sm">
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted-foreground">Barang dipilih</dt>
+                <dd className="font-medium tabular-nums">{selectedCount} dari {cart.items.length}</dd>
               </div>
-            ) : recommendations.length > 0 ? (
-              <Carousel className="rounded-md overflow-hidden relative">
-              <CarouselContent className="[&>div>div]:items-stretch">
-                {recommendations.map((p, idx) => (
-                  <CarouselItem key={`${p.slug}-${idx}`} className="basis-1/2 md:basis-1/3 lg:basis-1/4 pt-4">
-                    <div className="border rounded-lg bg-white h-full flex flex-col relative">
-                      {
-                        (p.regularPrice && Number(p.regularPrice) > 0) && (p.regularPrice !== p.price) &&
-                        <div className="absolute left-0 -top-3 z-[99999]">
-                          <span className="inline-flex items-center gap-1 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-sm">
-                            Hemat {priceToIDR(parseFloat(p.regularPrice) - parseFloat(p.price))}
-                          </span>
-                        </div>
-                      }
-                      <div className="aspect-[16/9] bg-gray-100 flex-shrink-0">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={p.thumbnail || "/images/placeholder-image.svg"} alt={p.name} className="w-full h-full object-cover" />
-                      </div>
-                      <div className="p-3 space-y-2 flex flex-col justify-between h-full">
-                        <div className="line-clamp-2 font-medium text-sm">{p.name}</div>
-                        <div className="flex flex-col items-start gap-2">
-                          {(p.regularPrice && Number(p.regularPrice) > 0) && (p.regularPrice !== p.price) && (
-                            <span className="text-xs line-through">Rp {Number(p.regularPrice).toLocaleString("id-ID")}</span>
-                          )}
-                          <span className="font-bold text-red-500">Rp {Number(p.price || 0).toLocaleString("id-ID")}</span>
-                        </div>
-                        <div className="mt-auto pt-2">
-                          <Link
-                            href={`https://topsellbelanja.com/product/${p.slug}`}
-                            target="_blank"
-                            className="inline-flex items-center justify-center w-full py-2 px-3 bg-[#03445f] text-white text-sm rounded hover:bg-[#03445f]"
-                          >
-                            Info Pemesanan
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              {recommendations.length > 1 && (
-                <>
-                  <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-black text-white hover:text-white rounded-full p-2 hover:bg-black/80 hidden lg:block" />
-                  <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-black text-white hover:text-white rounded-full p-2 hover:bg-black/80 hidden lg:block" />
-                </>
-              )}
-            </Carousel>
-            ) : (
-              <div className="text-sm text-gray-500">Tidak ada rekomendasi saat ini.</div>
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted-foreground">Subtotal</dt>
+                <dd className="font-medium tabular-nums">{priceToIDR(selectedTotal)}</dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted-foreground">Ongkos kirim</dt>
+                <dd className="text-muted-foreground">Dihitung di checkout</dd>
+              </div>
+            </dl>
+            <div className="mt-4 flex items-baseline justify-between gap-4 border-t pt-4">
+              <span className="font-bold">Total</span>
+              <span className="text-xl font-extrabold tabular-nums">{priceToIDR(selectedTotal)}</span>
+            </div>
+            <Button size="lg" className="mt-5 w-full font-bold" onClick={handleCheckout} disabled={selectedCount === 0}>
+              Lanjut ke Checkout{selectedCount > 0 ? ` (${selectedCount})` : ""}
+            </Button>
+            {selectedCount === 0 && (
+              <p className="mt-2 text-center text-sm text-muted-foreground" role="status">Pilih minimal satu barang</p>
             )}
-          </div>
-        </div>
-
-        <div className="lg:col-span-1 order-3 lg:order-2">
-          <div className="bg-white rounded-lg shadow p-6 lg:sticky lg:top-6">
-            <h2 className="text-lg font-semibold mb-4">Ringkasan Pesanan</h2>
-
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span>Item Terpilih</span>
-                <span>{getSelectedItemCount()} / {cart.items.length}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span>{priceToIDR(calculateSelectedTotal())}</span>
-              </div>
-              <div className="flex justify-between text-gray-500">
-                <span>Pengiriman</span>
-                <span>Dihitung saat checkout</span>
-              </div>
-              <hr className="my-4" />
-              <div className="flex justify-between font-bold text-lg">
-                <span>Total</span>
-                <span>{priceToIDR(calculateSelectedTotal())}</span>
-              </div>
-            </div>
-
-            <button
-              className="w-full mt-6 py-3 px-4 bg-primary text-white rounded-md hover:bg-primary/90 flex items-center justify-center"
-              onClick={handleCheckout}
-              disabled={getSelectedItemCount() === 0}
-            >
-              <CheckCircle2 className="w-5 h-5 mr-2" />
-              Checkout ({getSelectedItemCount()} Item)
-            </button>
-
-            <Link
-              href="https://topsellbelanja.com"
-              className="block w-full mt-4 py-2 px-4 text-center text-gray-600 hover:text-gray-800"
-            >
-              Lanjutkan Belanja
+            <Link href="https://topsellbelanja.com" className="mt-4 block text-center text-sm font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground">
+              Lanjutkan belanja
             </Link>
-          </div>
+          </aside>
         </div>
+
+        <Recommendations items={recommendations} loading={recoLoading} />
       </div>
 
-      {/* Desktop-only recommendations placed after grid so sticky summary stops before this section */}
-      <div className="mt-10 hidden md:block">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-xl font-semibold">Rekomendasi Untuk Anda</h2>
-        </div>
-        {recoLoading ? (
-          <div className="flex justify-center py-8">
-            <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary"></div>
+      {/* Phone: total and the way forward stay in reach. */}
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t bg-card px-4 pb-safe pt-3 shadow-[0_-8px_24px_-12px_rgb(0_0_0/0.2)] lg:hidden">
+        <div className="mx-auto flex max-w-6xl flex-col gap-2 pb-3 min-[400px]:flex-row min-[400px]:items-center min-[400px]:gap-4">
+          <div className="min-w-0 flex-1">
+            <p className="text-xs text-muted-foreground">{selectedCount} barang dipilih</p>
+            <p className="truncate text-lg font-extrabold tabular-nums">{priceToIDR(selectedTotal)}</p>
           </div>
-        ) : recommendations.length > 0 ? (
-          <Carousel className="rounded-md overflow-hidden relative">
-              <CarouselContent className="[&>div>div]:items-stretch">
-                {recommendations.map((p, idx) => (
-                  <CarouselItem key={`${p.slug}-${idx}`} className="basis-1/2 md:basis-1/3 lg:basis-1/4 pt-4">
-                    <div className="border rounded-lg bg-white h-full flex flex-col relative">
-                      {
-                        (p.regularPrice && Number(p.regularPrice) > 0) && (p.regularPrice !== p.price) &&
-                        <div className="absolute left-0 -top-3 z-[99999]">
-                          <span className="inline-flex items-center gap-1 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-sm">
-                            Hemat {priceToIDR(parseFloat(p.regularPrice) - parseFloat(p.price))}
-                          </span>
-                        </div>
-                      }
-                      <div className="aspect-[16/9] bg-gray-100 flex-shrink-0">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={p.thumbnail || "/images/placeholder-image.svg"} alt={p.name} className="w-full h-full object-cover" />
-                      </div>
-                      <div className="p-3 space-y-2 flex flex-col justify-between h-full">
-                        <div className="line-clamp-2 font-medium text-sm">{p.name}</div>
-                        <div className="flex flex-col items-start gap-2">
-                          {(p.regularPrice && Number(p.regularPrice) > 0) && (p.regularPrice !== p.price) && (
-                            <span className="text-xs line-through">Rp {Number(p.regularPrice).toLocaleString("id-ID")}</span>
-                          )}
-                          <span className="font-bold text-red-500">Rp {Number(p.price || 0).toLocaleString("id-ID")}</span>
-                        </div>
-                        <div className="mt-auto pt-2">
-                          <Link
-                            href={`https://topsellbelanja.com/product/${p.slug}`}
-                            target="_blank"
-                            className="inline-flex items-center justify-center w-full py-2 px-3 bg-[#03445f] text-white text-sm rounded hover:bg-[#03445f]"
-                          >
-                            Info Pemesanan
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              {recommendations.length > 1 && (
-                <>
-                  <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-black text-white hover:text-white rounded-full p-2 hover:bg-black/80 hidden lg:block" />
-                  <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-black text-white hover:text-white rounded-full p-2 hover:bg-black/80 hidden lg:block" />
-                </>
-              )}
-            </Carousel>
-        ) : (
-          <div className="text-sm text-gray-500">Tidak ada rekomendasi saat ini.</div>
-        )}
+          <Button size="lg" className="font-bold min-[400px]:shrink-0" onClick={handleCheckout} disabled={selectedCount === 0}>
+            Checkout{selectedCount > 0 ? ` (${selectedCount})` : ""}
+          </Button>
+        </div>
       </div>
-    </div>
     </>
   );
 }

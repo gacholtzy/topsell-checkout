@@ -196,7 +196,7 @@ export default function ProfilePage() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-            <p className="mt-2 text-gray-600">Memuat data profil...</p>
+            <p className="mt-2 text-muted-foreground">Memuat data profil...</p>
           </div>
         </div>
       </div>
@@ -207,7 +207,7 @@ export default function ProfilePage() {
     return (
       <div className="container mx-auto max-w-2xl px-6 py-8">
         <div className="text-center">
-          <p className="text-gray-600">Tidak dapat memuat data profil</p>
+          <p className="text-muted-foreground">Tidak dapat memuat data profil</p>
         </div>
       </div>
     )
@@ -219,15 +219,15 @@ export default function ProfilePage() {
 
         {/* Points summary card */}
         <Link href="/points" className="block">
-          <Card className="transition-colors hover:bg-yellow-50/60">
+          <Card className="transition-colors hover:bg-secondary">
             <CardContent className="flex items-center justify-between py-4">
               <div className="flex items-center gap-3">
-                <div className="rounded-full bg-yellow-100 p-2 text-yellow-600">
+                <div className="rounded-full bg-warning-soft p-2 text-warning">
                   <Star className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Saldo Poin</p>
-                  <p className="text-xl font-bold text-yellow-600">
+                  <p className="text-sm text-muted-foreground">Saldo Poin</p>
+                  <p className="text-xl font-bold text-warning">
                     {(pointBalance ?? 0).toLocaleString('id-ID')} poin
                   </p>
                 </div>
@@ -258,7 +258,7 @@ export default function ProfilePage() {
               <Input
                 value={userProfile.fullName}
                 readOnly
-                className="bg-gray-50"
+                className="bg-secondary/60"
               />
             </div>
 
@@ -271,7 +271,7 @@ export default function ProfilePage() {
               <Input
                 value={userProfile.phoneNumber}
                 readOnly
-                className="bg-gray-50"
+                className="bg-secondary/60"
               />
             </div>
 
@@ -289,7 +289,7 @@ export default function ProfilePage() {
                         {userProfile && (
                           <Badge
                             // variant={userProfile.isEmailValid ? "" : "destructive"}
-                            className={`ml-2 ${userProfile.isEmailValid ? "bg-green-500" : "bg-red-500"}`}
+                            className={`ml-2 ${userProfile.isEmailValid ? "bg-success text-white" : "bg-destructive text-white"}`}
                           >
                             {userProfile.isEmailValid ? (
                               <>
@@ -312,7 +312,7 @@ export default function ProfilePage() {
                             type="email"
                             placeholder="Masukkan email Anda"
                             readOnly={userProfile?.isEmailValid}
-                            className={`${userProfile?.isEmailValid ? "bg-gray-50" : ""}`}
+                            className={`${userProfile?.isEmailValid ? "bg-secondary/60" : ""}`}
                           />
                           {
                             !userProfile?.isEmailValid && (

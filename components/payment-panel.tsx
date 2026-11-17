@@ -36,28 +36,28 @@ const PaymentPanel = ({ order, loadedAt }: { order: Order; loadedAt: number }) =
     if (!payUrl && !hasDeadline) return null
 
     return (
-        <div className="mt-3 rounded-md border border-red-200 bg-red-50 p-3 text-sm">
+        <div className="rounded-lg bg-warning-soft px-4 py-3 text-sm">
             {hasDeadline && !expired && (
-                <div className="flex flex-wrap items-center gap-2 text-red-700">
+                <div className="flex flex-wrap items-center gap-2 text-warning">
                     <Clock className="h-4 w-4" />
                     <span>Selesaikan pembayaran dalam</span>
-                    <span className="font-mono text-lg font-bold">{formatCountdown(remaining!)}</span>
+                    <span className="text-lg font-extrabold tabular-nums">{formatCountdown(remaining!)}</span>
                 </div>
             )}
 
             {expired && (
-                <p className="text-red-700">
+                <p className="font-medium text-destructive">
                     Waktu pembayaran habis. Pesanan ini akan segera kedaluwarsa, silakan buat pesanan baru.
                 </p>
             )}
 
             {/* Gone once the time is up: the Snap page behind it would only say expired. */}
             {payUrl && !expired && (
-                <Button asChild className="mt-2 w-full bg-red-500 hover:bg-red-600 font-bold sm:w-auto">
+                <Button asChild className="mt-3 w-full font-bold sm:w-auto">
                     {isManual ? (
-                        <Link href={payUrl}>Bayar Sekarang</Link>
+                        <Link href={payUrl}>Bayar sekarang</Link>
                     ) : (
-                        <a href={payUrl}>Bayar Sekarang</a>
+                        <a href={payUrl}>Bayar sekarang</a>
                     )}
                 </Button>
             )}

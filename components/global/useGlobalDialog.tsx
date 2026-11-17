@@ -49,7 +49,7 @@ export const useGlobalDialog = () => {
       description: "",
       hideTitle: true,
       content: (
-        <div className="flex flex-col items-center justify-center py-6 text-center">
+        <div className="flex flex-col items-center justify-center py-2 text-center">
           <h2 className="text-lg font-semibold mb-2">{title}</h2>
           <p className="text-sm text-muted-foreground">{message}</p>
         </div>
@@ -62,7 +62,7 @@ export const useGlobalDialog = () => {
               closeDialog();
               onCancel?.();
             }}
-            className="min-w-[100px]"
+            className="min-w-32"
           >
             {cancelLabel}
           </Button>
@@ -71,7 +71,7 @@ export const useGlobalDialog = () => {
               closeDialog();
               onConfirm();
             }}
-            className="min-w-[100px]"
+            className="min-w-32"
           >
             {confirmLabel}
           </Button>
@@ -92,17 +92,17 @@ export const useGlobalDialog = () => {
     const IconComponent = (() => {
       switch (iconType) {
         case 'info':
-          return <Info className="w-20 h-20 text-blue-500" strokeWidth={1.5} />;
+          return <Info className="h-10 w-10 text-foreground" strokeWidth={1.5} />;
         case 'success':
-          return <CheckCircle className="w-20 h-20 text-green-500" strokeWidth={1.5} />;
+          return <CheckCircle className="h-10 w-10 text-success" strokeWidth={1.5} />;
         case 'error':
-          return <XCircle className="w-20 h-20 text-red-500" strokeWidth={1.5} />;
+          return <XCircle className="h-10 w-10 text-destructive" strokeWidth={1.5} />;
         case 'warning':
-          return <AlertCircle className="w-20 h-20 text-amber-500" strokeWidth={1.5} />;
+          return <AlertCircle className="h-10 w-10 text-warning" strokeWidth={1.5} />;
         case 'none':
           return null;
         default:
-          return <Info className="w-20 h-20 text-blue-500" strokeWidth={1.5} />;
+          return <Info className="h-10 w-10 text-foreground" strokeWidth={1.5} />;
       }
     })();
 
@@ -111,13 +111,13 @@ export const useGlobalDialog = () => {
       description: "",
       hideTitle: true,
       content: iconType !== 'none' ? (
-        <div className="flex flex-col items-center justify-center py-6 text-center">
+        <div className="flex flex-col items-center justify-center py-2 text-center">
           {IconComponent}
-          <h2 className="text-lg font-semibold mt-6 mb-2">{title}</h2>
+          <h2 className="mb-2 mt-4 text-lg font-bold">{title}</h2>
           <p className="text-sm text-muted-foreground">{message}</p>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-6 text-center">
+        <div className="flex flex-col items-center justify-center py-2 text-center">
           <h2 className="text-lg font-semibold mb-2">{title}</h2>
           <p className="text-sm text-muted-foreground">{message}</p>
         </div>
@@ -129,7 +129,7 @@ export const useGlobalDialog = () => {
               closeDialog();
               onClose?.();
             }}
-            className="min-w-[100px]"
+            className="min-w-32"
           >
             {buttonLabel}
           </Button>

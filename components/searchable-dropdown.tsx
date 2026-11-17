@@ -78,8 +78,8 @@ export function SearchableDropdown<T>({
                     <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
                 {isOpen && (
-                    <div className="absolute z-50 w-full mt-1 bg-white border rounded-md shadow-lg max-h-[200px] overflow-y-auto">
-                        <div className="sticky top-0 bg-white border-b p-2">
+                    <div className="absolute z-50 w-full mt-1 bg-card border rounded-md shadow-lg max-h-[200px] overflow-y-auto">
+                        <div className="sticky top-0 bg-card border-b p-2">
                             <Input
                                 placeholder={searchPlaceholder}
                                 className="mb-0"
@@ -109,7 +109,7 @@ export function SearchableDropdown<T>({
                                 filteredOptions.map((option) => (
                                     <button
                                         key={getValue(option)}
-                                        className="w-full px-2 py-1.5 text-left hover:bg-gray-100 flex items-center"
+                                        className="w-full px-2 py-1.5 text-left hover:bg-secondary flex items-center"
                                         onClick={() => onSelect(option)}
                                     >
                                         <Check

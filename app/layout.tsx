@@ -1,19 +1,15 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { GlobalDialogProvider } from "@/components/global/GlobalDialog";
 import { getAppSettings } from "@/lib/app-settings";
 import SessionGuard from "@/components/session-guard";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -129,7 +125,7 @@ export default async function RootLayout({
           return <script key={index} dangerouslySetInnerHTML={{ __html: script.content }} />;
         })}
       </head>
-      <body className="antialiased">
+      <body className={`${jakarta.variable} font-sans antialiased`}>
         <GlobalDialogProvider>
           <SessionGuard />
           {noscript ? <noscript dangerouslySetInnerHTML={{ __html: noscript }} /> : null}

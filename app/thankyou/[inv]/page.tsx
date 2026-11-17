@@ -38,136 +38,94 @@ const ThankYouPage = () => {
     useEffect(() => {
         fetchOrder()
     }, [inv]);
+    const isPickup = order?.shipping.title == "Ambil di Toko"
+
     return (
-        <div className='container mx-auto max-w-7xl px-6 mb-12'>
-            {
-                isLoading ? (
-                    <div className="flex justify-center my-8">
-                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        <div className='mx-auto max-w-2xl px-4 pb-16 pt-6 sm:px-6 sm:pt-10'>
+            {isLoading ? (
+                <div className="flex justify-center py-16" role="status" aria-label="Memuat pesanan">
+                    <span className="h-8 w-8 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
+                </div>
+            ) : !order ? (
+                <div className="rounded-lg border bg-card p-8 text-center">
+                    <h1 className="text-xl font-bold">Pesanan tidak ditemukan</h1>
+                    <p className="mt-2 text-sm text-muted-foreground">Periksa nomor invoice, atau buka menu Pesanan untuk melihat riwayat Anda.</p>
+                    <Button asChild className="mt-5"><Link href="/order">Lihat pesanan saya</Link></Button>
+                </div>
+            ) : (
+                <>
+                    <p className="text-sm font-semibold text-success">Pesanan diterima</p>
+                    <h1 className="mt-1 text-2xl font-extrabold tracking-tight sm:text-3xl">Terima kasih, {order.name}</h1>
+                    <p className="mt-2 text-muted-foreground">
+                        Pesanan <span className="font-semibold text-foreground">{order.invoice}</span> sudah kami terima. Rinciannya ada di bawah.
+                    </p>
+
+                    <div className="mt-6 divide-y rounded-lg border bg-card">
+                        <section className="p-4 sm:p-6" aria-labelledby="ty-items">
+                            <h2 id="ty-items" className="mb-3 text-base font-bold">Barang</h2>
+                            <ul className="space-y-4">
+                                {order.products.map((product) => (
+                                    <li key={product.id} className="flex gap-3">
+                                        <img src={product.images[0].src} alt="" className="h-16 w-16 shrink-0 rounded-md border bg-secondary object-contain" />
+                                        <div className="min-w-0 flex-1">
+                                            <p className="text-sm font-semibold sm:text-base">{product.name} <span className="whitespace-nowrap font-medium text-muted-foreground">× {product.qty}</span></p>
+                                            {product.variant && <p className="text-sm text-muted-foreground">{product.variant}</p>}
+                                            <p className="mt-1 text-sm font-bold tabular-nums">{priceToIDR(product.price * product.qty)}</p>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        </section>
+
+                        <section className="p-4 sm:p-6" aria-labelledby="ty-ship">
+                            <h2 id="ty-ship" className="mb-3 text-base font-bold">Pengiriman dan pembayaran</h2>
+                            <dl className="grid gap-x-6 gap-y-3 text-sm sm:grid-cols-[10rem_1fr]">
+                                <dt className="text-muted-foreground">Pembayaran</dt>
+                                <dd className="font-medium">{order.paymentMethod.name}</dd>
+                                <dt className="text-muted-foreground">Pengiriman</dt>
+                                <dd className="font-medium">{order.shipping.title}{isPickup ? ` · ${order.area?.name} · ${order.area?.storeArea?.name}` : ""}</dd>
+                                <dt className="text-muted-foreground">{isPickup ? "Lokasi toko" : "Alamat tujuan"}</dt>
+                                <dd className="font-medium">{isPickup ? order.area?.address : order.address}</dd>
+                                <dt className="text-muted-foreground">Kontak</dt>
+                                <dd className="font-medium">{order.phone}<br />{order.email}</dd>
+                            </dl>
+                        </section>
+
+                        <section className="p-4 sm:p-6" aria-labelledby="ty-sum">
+                            <h2 id="ty-sum" className="mb-3 text-base font-bold">Ringkasan</h2>
+                            <dl className="space-y-2.5 text-sm">
+                                <div className="flex justify-between gap-4"><dt className="text-muted-foreground">Harga ({order.products.length} barang)</dt><dd className="tabular-nums">{priceToIDR(subtotal || 0)}</dd></div>
+                                <div className="flex justify-between gap-4"><dt className="text-muted-foreground">Ongkos kirim</dt><dd className="tabular-nums">{priceToIDR(order.ongkir || 0)}</dd></div>
+                                {!!order.adminFee && order.adminFee > 0 && (
+                                    <div className="flex justify-between gap-4"><dt className="text-muted-foreground">Biaya admin</dt><dd className="tabular-nums">{priceToIDR(order.adminFee)}</dd></div>
+                                )}
+                                {order.voucherID && (
+                                    <div className="flex justify-between gap-4 text-success"><dt>Potongan harga</dt><dd className="font-semibold tabular-nums">- {priceToIDR(order.voucherDiscount || 0)}</dd></div>
+                                )}
+                            </dl>
+                            <div className="mt-4 flex items-baseline justify-between gap-4 border-t pt-4">
+                                <span className="font-bold">Total</span>
+                                <span className="text-xl font-extrabold tabular-nums">{priceToIDR(order.total || 0)}</span>
+                            </div>
+                        </section>
                     </div>
-                ) : (
-                    <div>
-                        <h1 className='text-2xl md:text-3xl font-bold text-center my-3'>Terima Kasih Telah Belanja</h1>
-                        <p className='text-center my-3 text-gray-500'>Halo kak {order?.name}, pesanan kamu telah kami terima dengan detail:</p>
-                        <h2 className='text-lg font-bold my-3'>Produk yang dibeli:</h2>
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="w-full text-right">Pesanan {order?.invoice}</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="grid grid-cols-1 gap-4">
-                                    {order?.products.map((product) => (
-                                        <div key={product.id} className="flex items-start justify-between w-full">
-                                            <div className="flex items-start gap-4">
-                                                <img src={product.images[0].src} alt={product.name} width={100} height={100} />
-                                                <div className="flex flex-col gap-2">
-                                                    <h3 className="text-lg font-bold">{product.name} x {product.qty}</h3>
-                                                    {
-                                                        product.variant && (
-                                                            <p className="text-sm text-gray-500">{product.variant}</p>
-                                                        )
-                                                    }
-                                                    {
-                                                        product.regularPrice != product.price || product.regularPrice == 0 ? (
-                                                            <p className="text-sm font-bold text-red-500">{priceToIDR(product.regularPrice != product.price || product.regularPrice == 0 ? product.price : product.regularPrice)}</p>
-                                                        ) : (
-                                                            <p className="text-sm font-bold text-red-500">{priceToIDR(product.regularPrice)}</p>
-                                                        )
-                                                    }
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </CardContent>
-                        </Card>
-                        <h2 className="text-lg font-bold my-3">Pembayaran dan Pengiriman</h2>
-                        <Card>
-                            <VisuallyHidden>
-                                <CardHeader>
-                                    <CardTitle>Metode Pembayaran</CardTitle>
-                                </CardHeader>
-                            </VisuallyHidden>
-                            <CardContent className="pt-6">
-                                <h3 className="text-lg font-bold">Metode Pembayaran</h3>
-                                <p className="text-black">{order?.paymentMethod.name}</p>
-                                <Separator className="my-6" />
-                                <h3 className="text-lg font-bold">Metode Pengiriman</h3>
-                                <p className="text-black">{order?.shipping.title} {order?.shipping.title == "Ambil di Toko" ? ` - ${order?.area?.name} - ${order?.area?.storeArea?.name}` : ""}</p>
-                            </CardContent>
-                        </Card>
-                        <h2 className="text-lg font-bold my-3">Alamat Pengiriman</h2>
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>({order?.phone})</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-black">{
-                                    order?.shipping.title == "Ambil di Toko" ? order?.area?.address : order?.address
-                                }</p>
-                                <p className="text-black">{order?.email}</p>
-                            </CardContent>
-                        </Card>
-                        <h2 className="text-lg font-bold my-3">Ringkasan Belanja</h2>
-                        <Card>
-                            <VisuallyHidden>
-                                <CardHeader>
-                                    <CardTitle>Ringkasan Belanja</CardTitle>
-                                </CardHeader>
-                            </VisuallyHidden>
-                            <CardContent className="py-6">
-                                <div className="flex w-full justify-between">
-                                    <p>Total Harga ({order?.products.length} Barang)</p>
-                                    <p>{priceToIDR(subtotal || 0)}</p>
-                                </div>
-                                <div className="flex w-full justify-between">
-                                    <p>Ongkos Kirim</p>
-                                    <p>{priceToIDR(order?.ongkir || 0)}</p>
-                                </div>
-                                {
-                                    order?.adminFee && order?.adminFee > 0 && (
-                                        <div className="flex w-full justify-between">
-                                            <p>Biaya Admin</p>
-                                            <p>{priceToIDR(order?.adminFee || 0)}</p>
-                                        </div>
-                                    )
-                                }
-                                {
-                                    order?.voucherID && (
-                                        <div className="flex w-full justify-between">
-                                            <p>Potongan Harga</p>
-                                            <p className="font-bold text-red-500">- {priceToIDR(order?.voucherDiscount || 0)}</p>
-                                        </div>
-                                    )
-                                }
-                                <Separator className="my-6" />
-                                <div className="flex w-full justify-between">
-                                    <p className="font-bold">Total Belanja</p>
-                                    <p className="font-bold">{priceToIDR(order?.total || 0)}</p>
-                                </div>
-                            </CardContent>
-                        </Card>
-                        <div className="flex justify-center my-6">
-                            <Button className="my-4 text-2xl h-16 font-bold" variant="destructive" size="lg" onClick={() => window.location.replace("https://topsellbelanja.com")}>
-                                Lanjutkan Belanja
-                            </Button>
-                        </div>
-                        <Separator />
-                        <div className="flex justify-center my-6 max-w-xl mx-auto">
-                            <p className="text-gray-500 text-center">
-                                Apabila terjadi kesalahan pada detail di atas atau ingin melakukan
-                                perubahan data pesanan*. Anda dapat menghubungi Customer Service
-                                Viranda dengan klik tombol di bawah ini.
-                            </p>
-                        </div>
-                        <div className="flex justify-center my-6">
-                            <Link href="https://links.topsellbelanja.com/konfirmasi-pesanan-tsb" className="flex justify-center my-6 bg-green-500 p-4 rounded-lg h-16 items-center gap-2" target="_blank">
-                                <img src="/icons/whatsapp.svg" alt="WhatsApp" className="w-8 h-8" /> <span className="text-white font-bold">CS Viranda</span>
-                            </Link>
-                        </div>
+
+                    <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                        <Button asChild size="lg" className="sm:flex-1">
+                            <Link href={`/tracking/${order.invoice}`}>Lacak pesanan</Link>
+                        </Button>
+                        <Button variant="outline" size="lg" className="sm:flex-1" onClick={() => window.location.replace("https://topsellbelanja.com")}>
+                            Lanjut belanja
+                        </Button>
                     </div>
-                )
-            }
+                    <p className="mt-4 text-sm text-muted-foreground">
+                        Ada kesalahan data atau ingin mengubah pesanan?{" "}
+                        <a href="https://links.topsellbelanja.com/konfirmasi-pesanan-tsb" target="_blank" rel="noopener noreferrer" className="font-semibold text-foreground underline underline-offset-4">
+                            Hubungi Customer Service
+                        </a>.
+                    </p>
+                </>
+            )}
         </div>
     )
 }

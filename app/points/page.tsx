@@ -94,8 +94,8 @@ const PointsPage = () => {
     return (
       <div className="container mx-auto max-w-4xl px-4 py-8">
         <div className="text-center py-12">
-          <XCircle className="h-12 w-12 mx-auto mb-4 text-red-500" />
-          <p className="text-red-500 mb-4">{error}</p>
+          <XCircle className="h-12 w-12 mx-auto mb-4 text-primary" />
+          <p className="text-primary mb-4">{error}</p>
           <Button onClick={() => fetchData(page)}>Coba Lagi</Button>
         </div>
       </div>
@@ -106,8 +106,8 @@ const PointsPage = () => {
     <div className="container mx-auto max-w-4xl px-4 py-8">
       <div className="mb-8 flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Poin Saya</h1>
-          <p className="text-gray-600">Pantau dan tukarkan poin reward Anda</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Poin Saya</h1>
+          <p className="text-muted-foreground">Pantau dan tukarkan poin reward Anda</p>
         </div>
         <Link href="/points/redeem">
           <Button className="gap-2">
@@ -121,14 +121,14 @@ const PointsPage = () => {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg">Saldo Poin Aktif</CardTitle>
-              <Star className="h-6 w-6 text-yellow-500" />
+              <Star className="h-6 w-6 text-warning" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-yellow-600">
+            <div className="text-3xl font-bold text-warning">
               {(balance?.activePoints ?? 0).toLocaleString('id-ID')}
             </div>
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-sm text-muted-foreground mt-2">
               Setara Rp{((balance?.activePoints ?? 0) * (balance?.pointToRupiah ?? 1)).toLocaleString('id-ID')}
             </p>
           </CardContent>
@@ -138,19 +138,19 @@ const PointsPage = () => {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg">Akan Kedaluwarsa</CardTitle>
-              <Clock className="h-6 w-6 text-orange-500" />
+              <Clock className="h-6 w-6 text-warning" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-orange-600">
+            <div className="text-3xl font-bold text-warning">
               {(balance?.expiringSoonPoints ?? expiring?.totalExpiring ?? 0).toLocaleString('id-ID')}
             </div>
             {expiring?.lots && expiring.lots.length > 0 ? (
-              <p className="text-sm text-gray-500 mt-2">
+              <p className="text-sm text-muted-foreground mt-2">
                 Tercepat hangus {dateStringToLocale(expiring.lots[0].expiresAt)}
               </p>
             ) : (
-              <p className="text-sm text-gray-500 mt-2">Tidak ada poin yang segera hangus</p>
+              <p className="text-sm text-muted-foreground mt-2">Tidak ada poin yang segera hangus</p>
             )}
           </CardContent>
         </Card>
@@ -160,7 +160,7 @@ const PointsPage = () => {
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Riwayat Poin</span>
-            <span className="text-sm font-normal text-gray-500">Total: {total} aktivitas</span>
+            <span className="text-sm font-normal text-muted-foreground">Total: {total} aktivitas</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -173,20 +173,20 @@ const PointsPage = () => {
                   <div
                     key={row.id}
                     className={`flex items-center justify-between p-3 rounded-lg border ${
-                      credit ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'
+                      credit ? 'bg-success-soft border-success/30' : 'bg-secondary/60 border-border'
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-full ${credit ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'}`}>
+                      <div className={`p-2 rounded-full ${credit ? 'bg-success-soft text-success' : 'bg-secondary text-muted-foreground'}`}>
                         <meta.Icon className="h-4 w-4" />
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">{row.description || meta.label}</p>
-                        <p className="text-sm text-gray-500">{dateStringToLocale(row.createdAt)}</p>
+                        <p className="font-medium text-foreground">{row.description || meta.label}</p>
+                        <p className="text-sm text-muted-foreground">{dateStringToLocale(row.createdAt)}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className={`font-bold ${credit ? 'text-green-600' : 'text-red-600'}`}>
+                      <div className={`font-bold ${credit ? 'text-success' : 'text-red-600'}`}>
                         {credit ? '+' : ''}{row.amount.toLocaleString('id-ID')}
                       </div>
                       <Badge variant="outline" className="mt-1 text-xs">{meta.label}</Badge>
@@ -200,7 +200,7 @@ const PointsPage = () => {
                   <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
                     Sebelumnya
                   </Button>
-                  <span className="text-gray-500">Halaman {page} dari {totalPages}</span>
+                  <span className="text-muted-foreground">Halaman {page} dari {totalPages}</span>
                   <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>
                     Berikutnya
                   </Button>
@@ -208,7 +208,7 @@ const PointsPage = () => {
               )}
             </div>
           ) : (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-muted-foreground">
               <Star className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>Belum ada riwayat poin</p>
               <p className="text-sm">Mulai belanja untuk mendapatkan poin!</p>

@@ -45,11 +45,12 @@ const AppHeader = () => {
     }
 
     return (
-        <div className="container mx-auto max-w-7xl px-6">
-            <header className="flex justify-between items-center py-4 space-y-4">
+        <div className="border-b bg-card">
+          <div className="container mx-auto max-w-7xl px-4 sm:px-6">
+            <header className="flex h-14 items-center justify-between sm:h-16">
                 <Link href="https://topsellbelanja.com/">
                     <img src="/images/logo.webp" alt="Logo"
-                        className='h-10'
+                        className='h-8 w-auto sm:h-10'
                     />
                 </Link>
                 <nav>
@@ -61,7 +62,7 @@ const AppHeader = () => {
                             profile, vouchers and logout all belong to an account. */}
                         {hydrated && !loggedIn && (
                             <li>
-                                <Button asChild className="bg-red-500 hover:bg-red-600 font-bold rounded-full px-5">
+                                <Button asChild className="px-4">
                                     <Link href={loginHref}>
                                         <LogIn className="h-4 w-4 mr-2" />
                                         Login
@@ -74,9 +75,9 @@ const AppHeader = () => {
                         <li>
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <div className='bg-red-500 hover:bg-red-600 font-bold text-lg p-2 rounded-full cursor-pointer flex items-center justify-center'>
-                                        <User className="h-6 w-6 text-white" />
-                                    </div>
+                                    <button type="button" aria-label="Menu akun" className='flex h-11 w-11 items-center justify-center rounded-full border bg-card text-foreground transition-colors hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'>
+                                        <User className="h-5 w-5" />
+                                    </button>
                                 </PopoverTrigger>
                                 <PopoverContent className="w-64 p-2" align="end">
                                     <div className="space-y-1">
@@ -134,7 +135,7 @@ const AppHeader = () => {
                                         </Button> */}
                                         <Button
                                             variant="ghost"
-                                            className="w-full justify-start text-left text-red-600 hover:text-red-700 hover:bg-red-50"
+                                            className="w-full justify-start text-left text-destructive hover:text-destructive hover:bg-destructive/10"
                                             onClick={handleLogout}
                                         >
                                             <LogOut className="h-4 w-4 mr-2" />
@@ -148,6 +149,7 @@ const AppHeader = () => {
                     </ul>
                 </nav>
             </header>
+          </div>
         </div>
     )
 }

@@ -85,37 +85,37 @@ const PickVoucher = () => {
                             }
                         }
                     }
-                    className='cursor-pointer w-full h-20 border border-gray-300 flex rounded-md p-4 items-center text-lg font-semibold justify-between'>
+                    className='w-full min-h-14 cursor-pointer rounded-lg border border-input bg-card p-3.5 flex items-center justify-between gap-3 text-sm font-semibold transition-colors hover:bg-secondary'>
                     <div className="flex items-center">
-                        <TicketIcon className='w-12 h-12 mr-4 text-red-500' />
+                        <TicketIcon className='mr-3 h-5 w-5 shrink-0 text-primary' />
                         {
                             selectedVoucher && selectedShippingVoucher ? (
                                 <div className='flex items-start flex-col'>
-                                    <div className='text-xl  font-semibold'>{selectedVoucher.name}</div>
-                                    <div className='text-xl  font-semibold'>{selectedShippingVoucher.name}</div>
+                                    <div className='text-sm font-semibold'>{selectedVoucher.name}</div>
+                                    <div className='text-sm font-semibold'>{selectedShippingVoucher.name}</div>
                                 </div>
                             ) : selectedVoucher ? (
                                 selectedVoucher.name
                             ) : selectedShippingVoucher ? (
                                 selectedShippingVoucher.name
                             ) : (
-                                'Pilih Voucher'
+                                <span className='text-muted-foreground'>Pakai voucher</span>
                             )
                         }
                     </div>
-                    <ChevronRightIcon className="w-6 h-6" />
+                    <span className="shrink-0 text-sm font-semibold text-primary underline underline-offset-4">{selectedVoucher || selectedShippingVoucher ? "Ganti" : "Pilih"}</span>
                 </div>) : (
-                    <div className='w-full h-20 border border-gray-300 flex rounded-md p-4 items-center text-lg font-semibold justify-between'>
+                    <div className='w-full min-h-14 rounded-lg border border-input p-3.5 flex items-center justify-between text-sm font-semibold'>
                         <div className="flex items-center">
-                            <TicketIcon className='w-12 h-12 mr-4 text-red-500' />
+                            <TicketIcon className='mr-3 h-5 w-5 shrink-0 text-primary' />
                             <div className='flex items-center'>
-                                <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                                <div className="w-5 h-5 border-2 border-foreground border-t-transparent rounded-full animate-spin"></div>
                                 <span className='ml-2'>Loading...</span>
                             </div>
                         </div>
                     </div>
                 )}
-                <DialogContent className='overflow-y-auto max-h-[calc(100vh-100px)]'>
+                <DialogContent className='overflow-y-auto max-h-[85dvh]'>
                     <DialogHeader>
                         <DialogTitle>Pilih Voucher</DialogTitle>
                     </DialogHeader>
@@ -128,31 +128,27 @@ const PickVoucher = () => {
                             <div>
                                 {
                                     vouchers.length > 0 && (
-                                        <h4 className='text-lg font-semibold'>Voucher yang tersedia</h4>
+                                        <h4 className='text-base font-bold'>Voucher yang tersedia</h4>
                                     )
                                 }
                                 {
                                     vouchers.map((voucher: Voucher) => (
                                         <div key={voucher.id}>
-                                            <div className={`rounded-md p-4 mt-4 w-full transition-all ${
-                                                !voucher.isEligible 
-                                                    ? 'bg-gray-300 opacity-60 cursor-not-allowed' 
-                                                    : selectedVoucher?.id === voucher.id 
-                                                        ? 'bg-red-100' 
-                                                        : 'bg-red-600'
+                                            <div className={`rounded-lg border p-4 mt-3 w-full transition-colors ${
+                                                !voucher.isEligible
+                                                    ? 'border-dashed bg-secondary/50 opacity-70 cursor-not-allowed'
+                                                    : selectedVoucher?.id === voucher.id
+                                                        ? 'border-primary bg-accent'
+                                                        : 'bg-card'
                                             }`}>
 
                                                 <div className='grid grid-cols-12 gap-4'>
                                                     <div className={`col-span-10 ${
-                                                        !voucher.isEligible 
-                                                            ? 'text-gray-500' 
-                                                            : selectedVoucher?.id !== voucher.id 
-                                                                ? 'text-white' 
-                                                                : 'text-red-500'
+                                                        !voucher.isEligible ? 'text-muted-foreground' : 'text-foreground'
                                                     }`}>
-                                                        <div className='text-xl font-semibold'>{voucher.name}</div>
+                                                        <div className='text-base font-semibold'>{voucher.name}</div>
                                                         {!voucher.isEligible && voucher.ineligibleReason && (
-                                                            <div className='text-xs font-medium mt-1 mb-1 text-gray-600 bg-gray-200 rounded px-2 py-0.5 inline-block'>
+                                                            <div className='text-xs font-medium mt-1 mb-1 text-muted-foreground bg-secondary rounded px-2 py-0.5 inline-block'>
                                                                 {formatCurrencyInText(voucher.ineligibleReason)}
                                                             </div>
                                                         )}
@@ -180,8 +176,8 @@ const PickVoucher = () => {
                                                     <div className='col-span-2 flex items-center justify-end'>
                                                         {!voucher.isEligible ? null : selectedVoucher?.id === voucher.id && voucher.isAutoApply && !voucher.isCancellable ? null : (
                                                             <Button 
-                                                                variant="destructive" 
-                                                                className='border border-white bg-red-600'
+                                                                variant="outline" size="sm"
+                                                                className=''
                                                                 disabled={!voucher.isEligible || (hasNonCancellableAutoApplyVoucher && selectedVoucher?.id !== voucher.id)}
                                                                 onClick={() => {
                                                                     if (!voucher.isEligible) return
@@ -202,8 +198,8 @@ const PickVoucher = () => {
                                                     </div>
                                                 </div>
                                                 {voucher.isEligible && isExpiringSoon(voucherEndDate(voucher)) && (
-                                                    <div className={`flex justify-end items-center text-xs font-medium mb-2 text-right ${selectedVoucher?.id !== voucher.id ? 'text-white' : 'text-red-500'}`}>
-                                                        <span className='mr-2'>Berakhir pada:</span> <Badge variant="default" className='bg-yellow-500 text-white'>
+                                                    <div className={`flex justify-end items-center text-xs font-medium mt-2 text-right text-muted-foreground`}>
+                                                        <span className='mr-2'>Berakhir pada:</span> <Badge variant="default" className='bg-warning-soft text-warning border-transparent'>
                                                             <TimerIcon className='w-4 h-4 mr-2' />
                                                             <VoucherCountdown endDate={voucherEndDate(voucher)} />
                                                         </Badge>
@@ -215,30 +211,26 @@ const PickVoucher = () => {
                                 }
                                 {
                                     shippingVouchers.length > 0 && (
-                                        <h4 className='text-lg font-semibold mt-4'>Voucher Ongkir yang tersedia</h4>
+                                        <h4 className='text-base font-bold mt-6'>Voucher Ongkir yang tersedia</h4>
                                     )
                                 }
                                 {
                                     shippingVouchers.map((voucher: Voucher) => (
                                         <div key={voucher.id}>
-                                            <div className={`rounded-md p-4 mt-4 w-full transition-all ${
-                                                !voucher.isEligible 
-                                                    ? 'bg-gray-300 opacity-60 cursor-not-allowed' 
-                                                    : selectedShippingVoucher?.id === voucher.id 
-                                                        ? 'bg-blue-100' 
-                                                        : 'bg-blue-600'
+                                            <div className={`rounded-lg border p-4 mt-3 w-full transition-colors ${
+                                                !voucher.isEligible
+                                                    ? 'border-dashed bg-secondary/50 opacity-70 cursor-not-allowed'
+                                                    : selectedShippingVoucher?.id === voucher.id
+                                                        ? 'border-primary bg-accent'
+                                                        : 'bg-card'
                                             }`}>
                                                 <div className='grid grid-cols-12 gap-4'>
                                                     <div className={`col-span-10 ${
-                                                        !voucher.isEligible 
-                                                            ? 'text-gray-500' 
-                                                            : selectedShippingVoucher?.id !== voucher.id 
-                                                                ? 'text-white' 
-                                                                : 'text-blue-500'
+                                                        !voucher.isEligible ? 'text-muted-foreground' : 'text-foreground'
                                                     }`}>
-                                                        <div className='text-xl font-semibold'>{voucher.name}</div>
+                                                        <div className='text-base font-semibold'>{voucher.name}</div>
                                                         {!voucher.isEligible && voucher.ineligibleReason && (
-                                                            <div className='text-xs font-medium mt-1 mb-1 text-gray-600 bg-gray-200 rounded px-2 py-0.5 inline-block'>
+                                                            <div className='text-xs font-medium mt-1 mb-1 text-muted-foreground bg-secondary rounded px-2 py-0.5 inline-block'>
                                                                 {formatCurrencyInText(voucher.ineligibleReason)}
                                                             </div>
                                                         )}
@@ -266,8 +258,8 @@ const PickVoucher = () => {
                                                     <div className='col-span-2 flex items-center justify-end'>
                                                         {!voucher.isEligible ? null : selectedShippingVoucher?.id === voucher.id && voucher.isAutoApply && !voucher.isCancellable ? null : (
                                                             <Button 
-                                                                variant="destructive" 
-                                                                className='border border-white bg-blue-600 hover:bg-blue-700'
+                                                                variant="outline" size="sm"
+                                                                className=''
                                                                 disabled={!voucher.isEligible || (hasNonCancellableAutoApplyShippingVoucher && selectedShippingVoucher?.id !== voucher.id)}
                                                                 onClick={() => {
                                                                     if (!voucher.isEligible) return
@@ -288,8 +280,8 @@ const PickVoucher = () => {
                                                     </div>
                                                 </div>
                                                 {voucher.isEligible && isExpiringSoon(voucherEndDate(voucher)) && (
-                                                    <div className={`flex justify-end items-center text-xs font-medium mb-2 text-right ${selectedShippingVoucher?.id !== voucher.id ? 'text-white' : 'text-blue-500'}`}>
-                                                        <span className='mr-2'>Berakhir pada:</span> <Badge variant="default" className='bg-yellow-500 text-white'>
+                                                    <div className={`flex justify-end items-center text-xs font-medium mt-2 text-right text-muted-foreground`}>
+                                                        <span className='mr-2'>Berakhir pada:</span> <Badge variant="default" className='bg-warning-soft text-warning border-transparent'>
                                                             <TimerIcon className='w-4 h-4 mr-2' />
                                                             <VoucherCountdown endDate={voucherEndDate(voucher)} />
                                                         </Badge>

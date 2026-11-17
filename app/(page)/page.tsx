@@ -1,10 +1,10 @@
 "use client";
 import PickVoucher from '../../components/pick-voucher'
 import ProductDetail from '../../components/product_detail'
-import ShippingAndPayment from '../../components/shipping-payment'
+import ShippingOption from '../../components/shipping-option'
+import PaymentOption from '../../components/payment-option'
+import { CheckoutSection } from '../../components/checkout/section'
 import { Button } from '../../components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card'
-import { Separator } from '../../components/ui/separator'
 import { useAddress } from '../../context/address';
 import { useShipping } from '../../context/shipping'
 import { useVoucher } from '../../context/voucher';
@@ -285,128 +285,131 @@ const StorePage = () => {
         countGrandTotal()
     }, [totalPriceToCheckout, shippingCost, voucherDiscount, shippingVoucherDiscount, selectedPaymentMethod])
 
+    // What still stands between the customer and a placed order, in the order
+    // they would fix it. Shown next to the button so a disabled button is never
+    // a mystery.
+    const blockedReason = !selectedShippingMethod
+        ? "Pilih metode pengiriman"
+        : (!addressState || !addressState.destinationID)
+            ? "Lengkapi data pembeli dan alamat"
+            : courierMissing
+                ? "Pilih kurir pengiriman"
+                : shippingOptionsLoading
+                    ? "Menghitung ongkos kirim…"
+                    : !selectedPaymentMethod
+                        ? "Pilih metode pembayaran"
+                        : null
+    const canConfirm = blockedReason === null && !isLoading
+
+    const showShippingLine = !!isShippingNotAmbilDiToko
+    const confirmLabel = isLoading ? "Memproses…" : "Konfirmasi Pesanan"
+
+    const confirmButton = () => (
+        <Button size="lg" className="w-full font-bold" onClick={handleConfirmOrder} disabled={!canConfirm}>
+            {isLoading && <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true" />}
+            {confirmLabel}
+        </Button>
+    )
+
+    const loadingRow = (
+        <span className="inline-flex items-center gap-2">
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true" />
+            Menghitung…
+        </span>
+    )
+
     return (
-        <div className='container mx-auto max-w-7xl px-6 mb-12'>
+        <div className='mx-auto max-w-6xl px-4 pb-32 pt-5 sm:px-6 sm:pt-8 lg:pb-12'>
             <AuthModal open={showAuthModal} onAuthenticated={handleAuthenticated} onClose={() => setShowAuthModal(false)} />
-            <div className='grid grid-cols-1 gap-12 md:grid-cols-2'>
-                <div className='space-y-6'>
-                    <ProductDetail />
-                    <Separator />
-                    <ShippingAndPayment />
+
+            <nav aria-label="Langkah belanja" className='mb-5 flex items-center gap-2 text-sm text-muted-foreground'>
+                <Link href="/cart" className='underline-offset-4 hover:text-foreground hover:underline'>Keranjang</Link>
+                <span aria-hidden="true">/</span>
+                <span aria-current="step" className='font-semibold text-foreground'>Checkout</span>
+                <span aria-hidden="true">/</span>
+                <span>Pembayaran</span>
+            </nav>
+            <h1 className='mb-6 text-2xl font-extrabold tracking-tight sm:text-3xl'>Checkout</h1>
+
+            <div className='grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-10'>
+                <div className='divide-y rounded-lg border bg-card'>
+                    <CheckoutSection step={1} title="Barang yang dibeli" done={totalQtyToCheckout > 0}>
+                        <ProductDetail />
+                    </CheckoutSection>
+                    <CheckoutSection step={2} title="Pengiriman" done={!!selectedShippingMethod && !!addressState?.destinationID && !courierMissing}>
+                        <ShippingOption />
+                    </CheckoutSection>
+                    <CheckoutSection step={3} title="Pembayaran" done={!!selectedPaymentMethod}>
+                        <PaymentOption />
+                    </CheckoutSection>
                 </div>
-                <div className='space-y-6'>
-                    <Card className='mt-12'>
-                        {/*<CardHeader>
-                            <CardTitle></CardTitle>
-                        </CardHeader>*/}
-                        <CardContent className='pt-4 space-y-6'>
-                            <PickVoucher />
-                            <Separator />
-                            <div className='space-y-2'>
-                                <h5 className='text-lg font-semibold'>Ringkasan Belanja</h5>
-                                <h5 className='font-semibold'>Total Belanja</h5>
-                                <div className='flex justify-between text-gray-500'>
-                                    <span>Total Harga ({totalQtyToCheckout}) barang</span>
-                                    <span>{priceToIDR(totalPriceToCheckout || 0)}</span>
-                                </div>
-                                {
-                                    isShippingNotAmbilDiToko ? (
-                                        <div className='flex justify-between text-gray-500'>
-                                            <span>
-                                                Ongkos Kirim
-                                                {selectedShippingOption && (
-                                                    <span className='block text-xs text-gray-400'>
-                                                        {shippingOptionLabel(selectedShippingOption)}
-                                                        {shippingOptionDuration(selectedShippingOption) ? ` · ${shippingOptionDuration(selectedShippingOption)}` : ''}
-                                                    </span>
-                                                )}
-                                            </span>
-                                            <span>{priceToIDR(shippingCost || 0)}</span>
-                                        </div>
-                                    ) : (
-                                        <div className='flex justify-between text-gray-500'>
-                                            {/* <span>Ongkos Kirim</span>
-                                            <span>Gratis</span> */}
-                                        </div>
-                                    )
-                                }
-                                {
-                                    selectedPaymentMethod && selectedPaymentMethod.adminFee > 0 && (
-                                        <div className='flex justify-between text-gray-500'>
-                                            <span>
-                                                Biaya Admin
-                                            </span>
-                                            <span>{priceToIDR(calculatedAdminFee || 0)}</span>
-                                        </div>
-                                    )
-                                }
-                                {
-                                    selectedVoucher && (
-                                        <div className='flex justify-between text-red-500'>
-                                            <span>Diskon Voucher</span>
-                                            <span>{
-                                                isLoadingVoucher ? (
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                                        <span>Loading...</span>
-                                                    </div>
-                                                ) : (
-                                                    "-" + priceToIDR(voucherDiscount || 0)
-                                                )
-                                            }</span>
-                                        </div>
-                                    )
-                                }
-                                {
-                                    selectedShippingVoucher && (
-                                        <div className='flex justify-between text-blue-500'>
-                                            <span>Diskon Ongkir</span>
-                                            <span>{isLoadingVoucher ? (
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                                    <span>Loading...</span>
-                                                </div>
-                                            ) : (
-                                                "-" + priceToIDR(shippingVoucherDiscount || 0)
-                                            )}</span>
-                                        </div>
-                                    )
-                                }
-                                <div className='flex justify-between font-black'>
-                                    <span>Total</span>
-                                    <span>{priceToIDR(grandTotal || 0)}</span>
-                                </div>
-                                <Separator />
-                                <Button
-                                    className='w-full text-xl font-bold h-12'
-                                    variant="destructive"
-                                    onClick={handleConfirmOrder}
-                                    disabled={!addressState || !addressState.destinationID || !selectedPaymentMethod || !selectedShippingMethod || courierMissing || shippingOptionsLoading || isLoading}
-                                >
-                                    {isLoading ? (
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                            <span>Processing...</span>
-                                        </div>
-                                    ) : (
-                                        <span>Konfirmasi Pesanan</span>
-                                    )}
-                                </Button>
+
+                <aside aria-label="Ringkasan pesanan" className='rounded-lg border bg-card lg:sticky lg:top-20'>
+                    <div className='p-4 sm:p-6'>
+                        <PickVoucher />
+                    </div>
+                    <div className='space-y-3 border-t p-4 text-sm sm:p-6'>
+                        <h2 className='text-base font-bold'>Ringkasan</h2>
+                        <dl className='space-y-2.5'>
+                            <div className='flex justify-between gap-4'>
+                                <dt className='text-muted-foreground'>Harga ({totalQtyToCheckout} barang)</dt>
+                                <dd className='font-medium tabular-nums'>{priceToIDR(totalPriceToCheckout || 0)}</dd>
                             </div>
-                        </CardContent>
-                    </Card>
-                </div>
+                            {showShippingLine && (
+                                <div className='flex justify-between gap-4'>
+                                    <dt className='text-muted-foreground'>
+                                        Ongkos kirim
+                                        {selectedShippingOption && (
+                                            <span className='block text-xs'>
+                                                {shippingOptionLabel(selectedShippingOption)}
+                                                {shippingOptionDuration(selectedShippingOption) ? ` · ${shippingOptionDuration(selectedShippingOption)}` : ''}
+                                            </span>
+                                        )}
+                                    </dt>
+                                    <dd className='font-medium tabular-nums'>{priceToIDR(shippingCost || 0)}</dd>
+                                </div>
+                            )}
+                            {selectedPaymentMethod && selectedPaymentMethod.adminFee > 0 && (
+                                <div className='flex justify-between gap-4'>
+                                    <dt className='text-muted-foreground'>Biaya admin</dt>
+                                    <dd className='font-medium tabular-nums'>{priceToIDR(calculatedAdminFee || 0)}</dd>
+                                </div>
+                            )}
+                            {selectedVoucher && (
+                                <div className='flex justify-between gap-4 text-success'>
+                                    <dt>Diskon voucher</dt>
+                                    <dd className='font-semibold tabular-nums'>{isLoadingVoucher ? loadingRow : "-" + priceToIDR(voucherDiscount || 0)}</dd>
+                                </div>
+                            )}
+                            {selectedShippingVoucher && (
+                                <div className='flex justify-between gap-4 text-success'>
+                                    <dt>Diskon ongkir</dt>
+                                    <dd className='font-semibold tabular-nums'>{isLoadingVoucher ? loadingRow : "-" + priceToIDR(shippingVoucherDiscount || 0)}</dd>
+                                </div>
+                            )}
+                        </dl>
+                        <div className='flex items-baseline justify-between gap-4 border-t pt-4'>
+                            <span className='text-base font-bold'>Total bayar</span>
+                            <span className='text-xl font-extrabold tabular-nums'>{priceToIDR(grandTotal || 0)}</span>
+                        </div>
+                        <div className='hidden space-y-2 pt-1 lg:block'>
+                            {confirmButton()}
+                            {blockedReason && <p className='text-center text-sm text-muted-foreground' role='status'>{blockedReason}</p>}
+                        </div>
+                    </div>
+                </aside>
             </div>
-            <div className='my-12 w-full flex md:hidden justify-center'>
-                <Link href="https://links.topsellbelanja.com/konfirmasi-pesanan-tsb" target='_blank'>
-                    <Button
-                        variant="default"
-                        className='bg-green-500 hover:bg-green-600 font-bold text-lg px-4 py-5'
-                    >
-                        <img src="/icons/whatsapp.svg" alt="Home" className="h-6" />
-                        Bantuan Cara Order
-                    </Button>
-                </Link>
+
+            {/* Phone: the total and the button stay in reach while the form scrolls. */}
+            <div className='fixed inset-x-0 bottom-0 z-30 border-t bg-card px-4 pb-safe pt-3 shadow-[0_-8px_24px_-12px_rgb(0_0_0/0.2)] lg:hidden'>
+                <div className='mx-auto flex max-w-6xl flex-col gap-2 pb-3 min-[400px]:flex-row min-[400px]:items-center min-[400px]:gap-4'>
+                    <div className='min-w-0 flex-1'>
+                        <p className='text-xs text-muted-foreground'>Total bayar</p>
+                        <p className='truncate text-lg font-extrabold tabular-nums'>{priceToIDR(grandTotal || 0)}</p>
+                        {blockedReason && <p className='text-xs text-muted-foreground min-[400px]:truncate' role='status'>{blockedReason}</p>}
+                    </div>
+                    <div className='min-[400px]:shrink-0'>{confirmButton()}</div>
+                </div>
             </div>
         </div>
     )

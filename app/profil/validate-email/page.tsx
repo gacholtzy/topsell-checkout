@@ -77,13 +77,13 @@ function ValidateEmailContent() {
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
               {validationStatus === 'loading' && (
-                <Loader2 className="h-12 w-12 text-blue-500 animate-spin" />
+                <Loader2 className="h-12 w-12 text-foreground animate-spin" />
               )}
               {validationStatus === 'success' && (
                 <CheckCircle className="h-12 w-12 text-green-500" />
               )}
               {validationStatus === 'error' && (
-                <XCircle className="h-12 w-12 text-red-500" />
+                <XCircle className="h-12 w-12 text-primary" />
               )}
             </div>
             <CardTitle className="flex items-center justify-center gap-2">
@@ -99,18 +99,18 @@ function ValidateEmailContent() {
           <CardContent className="text-center space-y-4">
             {validationStatus === 'loading' && (
               <div className="space-y-2">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-muted-foreground">
                   Mohon tunggu sebentar, kami sedang memverifikasi email Anda...
                 </p>
                 <div className="flex justify-center">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-foreground"></div>
                 </div>
               </div>
             )}
 
             {validationStatus === 'success' && (
               <div className="space-y-4">
-                <p className="text-sm text-green-600">
+                <p className="text-sm text-success">
                   Email Anda telah berhasil divalidasi. Anda akan dialihkan ke halaman profil dalam beberapa detik.
                 </p>
                 <Button onClick={handleGoToProfile} className="w-full">
@@ -148,7 +148,7 @@ export default function ValidateEmailPage() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-            <p className="mt-2 text-gray-600">Memuat halaman validasi...</p>
+            <p className="mt-2 text-muted-foreground">Memuat halaman validasi...</p>
           </div>
         </div>
       </div>

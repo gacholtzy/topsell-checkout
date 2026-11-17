@@ -92,26 +92,26 @@ function QRDisplayContent(): React.ReactElement {
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending":
-        return <Clock className="h-5 w-5 text-orange-500" />;
+        return <Clock className="h-5 w-5 text-warning" />;
       case "paid":
         return <CheckCircle className="h-5 w-5 text-green-500" />;
       case "failed":
-        return <AlertCircle className="h-5 w-5 text-red-500" />;
+        return <AlertCircle className="h-5 w-5 text-primary" />;
       default:
-        return <Clock className="h-5 w-5 text-gray-500" />;
+        return <Clock className="h-5 w-5 text-muted-foreground" />;
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending":
-        return "text-orange-600 bg-orange-50 border-orange-200";
+        return "text-warning bg-orange-50 border-orange-200";
       case "paid":
-        return "text-green-600 bg-green-50 border-green-200";
+        return "text-success bg-success-soft border-success/30";
       case "failed":
-        return "text-red-600 bg-red-50 border-red-200";
+        return "text-destructive bg-accent border-destructive/30";
       default:
-        return "text-gray-600 bg-gray-50 border-gray-200";
+        return "text-muted-foreground bg-secondary/60 border-border";
     }
   };
 
@@ -143,7 +143,7 @@ function QRDisplayContent(): React.ReactElement {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4">
+      <div className="min-h-screen bg-secondary/60 p-4">
         <div className="max-w-md mx-auto space-y-4">
           <Skeleton className="h-8 w-3/4" />
           <Card>
@@ -163,7 +163,7 @@ function QRDisplayContent(): React.ReactElement {
 
   if (error && !qrData) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4">
+      <div className="min-h-screen bg-secondary/60 p-4">
         <div className="max-w-md mx-auto">
           <Button
             variant="outline"
@@ -197,7 +197,7 @@ function QRDisplayContent(): React.ReactElement {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen bg-secondary/60 p-4">
       <div className="max-w-md mx-auto space-y-4">
         <div className="flex items-center justify-between">
           <Button
@@ -239,7 +239,7 @@ function QRDisplayContent(): React.ReactElement {
               {/* QR Code Display */}
               <div className="flex flex-col items-center space-y-4">
                 {qrCodeDataUrl ? (
-                  <div className="p-4 bg-white rounded-lg border-2 border-gray-200">
+                  <div className="p-4 bg-card rounded-lg border-2 border-border">
                     <img
                       src={qrCodeDataUrl}
                       alt="Payment QR Code"
@@ -247,8 +247,8 @@ function QRDisplayContent(): React.ReactElement {
                     />
                   </div>
                 ) : (
-                  <div className="w-64 h-64 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-gray-200">
-                    <span className="text-gray-500">QR Code could not be generated</span>
+                  <div className="w-64 h-64 bg-secondary rounded-lg flex items-center justify-center border-2 border-border">
+                    <span className="text-muted-foreground">QR Code could not be generated</span>
                   </div>
                 )}
                 
@@ -265,19 +265,19 @@ function QRDisplayContent(): React.ReactElement {
               {/* Payment Details */}
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Amount:</span>
+                  <span className="text-sm text-muted-foreground">Amount:</span>
                   <span className="font-semibold text-lg">
                     {formatCurrency(qrData.amount)}
                   </span>
                 </div>
                 
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Payment Type:</span>
+                  <span className="text-sm text-muted-foreground">Payment Type:</span>
                   <span className="font-medium">{qrData.paymentType}</span>
                 </div>
                 
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Status:</span>
+                  <span className="text-sm text-muted-foreground">Status:</span>
                   <div className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(qrData.status)}`}>
                     {qrData.status.charAt(0).toUpperCase() + qrData.status.slice(1)}
                   </div>
@@ -301,7 +301,7 @@ function QRDisplayContent(): React.ReactElement {
 
 function LoadingFallback() {
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen bg-secondary/60 p-4">
       <div className="max-w-md mx-auto space-y-4">
         <Skeleton className="h-8 w-3/4" />
         <Card>

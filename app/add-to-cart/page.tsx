@@ -139,7 +139,7 @@ export default function AddToCartPage() {
         <p className="text-center text-muted-foreground mb-6 max-w-md">{error}</p>
         <div className="flex gap-3">
           <button
-            className="px-4 py-2 border rounded-md hover:bg-gray-50"
+            className="px-4 py-2 border rounded-md hover:bg-secondary/60"
             onClick={() => window.location.reload()}
           >
             Coba lagi
