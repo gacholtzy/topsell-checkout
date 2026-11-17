@@ -1,0 +1,9 @@
+node_modules
+.git
+.github
+.next
+*.md
+.env*
+# API lokal punya image/cara jalan sendiri, bukan bagian image frontend
+local-api
+docs

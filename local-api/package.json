@@ -1,0 +1,16 @@
+{
+  "name": "topsell-local-api",
+  "private": true,
+  "type": "module",
+  "description": "API lokal tiruan untuk store-topsell-next (tahap 1: add-to-cart -> login -> keranjang -> checkout)",
+  "scripts": {
+    "start": "node server.mjs",
+    "check": "node selfcheck.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "pg": "^8.23.1"
+  }
+}
