@@ -240,7 +240,7 @@ const OrderPage = () => {
                 <ul className="space-y-3">
                     {order.products.map((item, index) => (
                         <li key={index} className="flex gap-3">
-                            <img src={item.images[0]?.src} alt="" className="h-14 w-14 shrink-0 rounded-md border bg-secondary object-contain" />
+                            <img src={item.images[0]?.src} alt="" loading="lazy" decoding="async" width={56} height={56} className="h-14 w-14 shrink-0 rounded-md border bg-secondary object-contain" />
                             <div className="min-w-0 flex-1">
                                 <p className="text-sm font-semibold leading-snug">{item.name}</p>
                                 <p className="mt-0.5 flex justify-between gap-3 text-sm text-muted-foreground">

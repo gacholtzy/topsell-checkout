@@ -5,7 +5,13 @@ import { RadioCard } from '@/components/base/radio/radio-card'
 import { Chip } from '@/components/base/badges/chip'
 import { useShipping } from '../context/shipping'
 import parse from 'html-react-parser'
-import AddressModal from './address-modal'
+import dynamic from 'next/dynamic'
+import { Skeleton } from './ui/skeleton'
+// Forms, zod and the shop picker are only needed once a method is chosen.
+const AddressModal = dynamic(() => import('./address-modal'), {
+    ssr: false,
+    loading: () => <Skeleton className='mt-4 h-24 w-full rounded-2xl' />,
+})
 import { useAddress } from '../context/address'
 import { priceToIDR } from '../lib/helper'
 import { useAddressStore } from '../lib/store'

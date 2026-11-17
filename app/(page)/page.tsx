@@ -20,7 +20,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link';
 import { useCart } from '@/context/cart';
 import { useAuthStore } from '@/lib/useAuthStore';
-import AuthModal from '@/components/auth-modal';
+import AuthModal from '@/components/auth-modal-lazy';
 
 const StorePage = () => {
     const { totalQtyToCheckout, totalPriceToCheckout, checkoutLines, excludedItemIds, qtyOverrides } = useCart()

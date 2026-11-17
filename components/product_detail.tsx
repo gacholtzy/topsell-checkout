@@ -10,6 +10,7 @@ import { usePickupStock, PICKUP_METHOD_TITLE } from '../context/pickup-stock';
 import { useShipping } from '../context/shipping';
 import { useAddress } from '../context/address';
 import { Button } from './ui/button';
+import { Skeleton } from './ui/skeleton';
 
 /**
  * The rows being bought. Under "Ambil di Toko", once a branch is chosen, each
@@ -128,7 +129,7 @@ const ProductDetail = () => {
                         </div>
                     </li>
                     )
-                }) : <li className='py-6 text-center text-sm text-muted-foreground'>Memuat data produk…</li>
+                }) : <li className='flex gap-3 py-1' role='status' aria-label='Memuat data produk'><Skeleton className='size-16 shrink-0 sm:size-20' /><div className='flex-1 space-y-2'><Skeleton className='h-4 w-3/4' /><Skeleton className='h-4 w-1/2' /></div></li>
             }
         </ul>
     )

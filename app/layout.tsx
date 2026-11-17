@@ -115,6 +115,7 @@ export default async function RootLayout({
   return (
     <html lang="id" className={jakarta.variable}>
       <head>
+        <link rel="preconnect" href="https://www.topsellbelanja.com" />
         {scripts.map((script, index) => {
           const attrs = parseAttributes(script.attributes);
           // External script (has src)

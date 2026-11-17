@@ -48,6 +48,10 @@ export function Recommendations({
                   <img
                     src={p.thumbnail || "/images/placeholder-image.svg"}
                     alt=""
+                    loading="lazy"
+                    decoding="async"
+                    width={400}
+                    height={300}
                     className="aspect-[4/3] w-full bg-secondary object-contain"
                   />
                   <span className="flex flex-1 flex-col gap-1 p-3">

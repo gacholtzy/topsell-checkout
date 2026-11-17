@@ -6,6 +6,7 @@ import { Recommendations } from "@/components/cart/recommendations";
 import { Checkbox } from "@/components/base/checkbox/checkbox";
 import { NumberField } from "@/components/base/number-field/number-field";
 import { Spinner } from "@/components/base/spinner/spinner";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/useAuthStore";
 import { useToast } from "@/hooks/use-toast";
@@ -21,7 +22,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Link from "next/link";
-import AuthModal from "@/components/auth-modal";
+import AuthModal from "@/components/auth-modal-lazy";
 type Recommendation = ProductRecommendationDTO;
 
 interface CartItem {
@@ -389,15 +390,39 @@ export default function CartPage() {
     <AuthModal open={showAuthModal} onAuthenticated={handleAuthenticated} onClose={() => setShowAuthModal(false)} />
   );
 
-  if (loading || processingPending) {
+  if (processingPending) {
     return (
       <>
         {authModal}
         <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3" role="status">
           <Spinner size="lg" aria-hidden />
-          <p className="text-sm text-muted-foreground">
-            {processingPending ? "Menambahkan produk ke keranjang…" : "Memuat keranjang…"}
-          </p>
+          <p className="text-sm text-muted-foreground">Menambahkan produk ke keranjang…</p>
+        </div>
+      </>
+    );
+  }
+
+  if (loading) {
+    return (
+      <>
+        {authModal}
+        <div className="mx-auto max-w-6xl px-4 pt-5 sm:px-6 sm:pt-8" role="status" aria-label="Memuat keranjang">
+          <Skeleton className="mb-6 h-9 w-48" />
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-10">
+            <div className="divide-y divide-border-button-default rounded-3xl border border-border-button-default">
+              {[0, 1].map((i) => (
+                <div key={i} className="flex gap-4 px-4 py-5 sm:px-6">
+                  <Skeleton className="size-20 shrink-0 sm:size-24" />
+                  <div className="flex-1 space-y-3">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-4 w-1/3" />
+                    <Skeleton className="h-9 w-36" />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <Skeleton className="hidden h-64 rounded-3xl lg:block" />
+          </div>
         </div>
       </>
     );
