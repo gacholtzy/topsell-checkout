@@ -476,7 +476,7 @@ export default function CartPage() {
           </Button>
         </div>
 
-        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-10">
+        <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-10">
           <div className="rounded-3xl border border-border-button-default bg-background-full">
             <div className="flex items-center gap-3 border-b border-border-button-default px-4 py-3 sm:px-6">
               <Checkbox isSelected={selectAll} onChange={toggleSelectAll}>

@@ -331,7 +331,7 @@ const StorePage = () => {
             </Breadcrumb>
             <h1 className='mb-6 text-title-1-semibold text-text-primary sm:text-display-4-semibold'>Checkout</h1>
 
-            <div className='grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-10'>
+            <div className='grid grid-cols-[minmax(0,1fr)] items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-10'>
                 <div className='divide-y divide-border-button-default rounded-3xl border border-border-button-default bg-background-full'>
                     <CheckoutSection step={1} title="Barang yang dibeli" done={totalQtyToCheckout > 0}>
                         <ProductDetail />

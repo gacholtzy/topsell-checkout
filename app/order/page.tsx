@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { PaymentMark } from '@/components/payment-mark'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
 import { Package, Clock, Truck, CheckCircle, XCircle, Calendar, DollarSign, ArrowLeftIcon } from 'lucide-react'
@@ -294,7 +295,7 @@ const OrderPage = () => {
                     {order.paymentMethod && (
                         <>
                             <dt className="text-muted-foreground">Pembayaran</dt>
-                            <dd className="flex items-center gap-2"><img src={order.paymentMethod.icon} alt="" className="h-5 w-8 object-contain" />{order.paymentMethod.name}</dd>
+                            <dd className="flex items-center gap-2"><PaymentMark method={order.paymentMethod} className="h-7 w-12" />{order.paymentMethod.name}</dd>
                         </>
                     )}
                     {order.voucher && (<><dt className="text-muted-foreground">Voucher</dt><dd>{order.voucher.name}</dd></>)}

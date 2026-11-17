@@ -10,6 +10,7 @@ import { Button } from './ui/button';
 import { useGlobalDialog } from './global/useGlobalDialog';
 import { usePickupStock } from '../context/pickup-stock';
 import { useCart } from '../context/cart';
+import { PaymentMark } from './payment-mark';
 
 const PaymentOption = () => {
     const [open, setOpen] = React.useState(false)
@@ -85,7 +86,7 @@ const PaymentOption = () => {
                     {selectedPaymentMethod ? <span
                         className='flex min-w-0 items-center gap-3'
                     >
-                        <img src={selectedPaymentMethod.icon} alt='' className='h-6 w-10 shrink-0 object-contain' />
+                        <PaymentMark method={selectedPaymentMethod} />
                         <span className='truncate'>{selectedPaymentMethod.name}</span>
                     </span> : <span className='text-muted-foreground'>Pilih metode pembayaran</span>}
                     <span className='shrink-0 text-sm font-semibold text-primary underline underline-offset-4'>{selectedPaymentMethod ? 'Ganti' : 'Pilih'}</span>
@@ -112,7 +113,7 @@ const PaymentOption = () => {
                                         })
                                         .map((method, idx) => (
                                             <div key={idx}>
-                                                <div className='mt-2 flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition-colors hover:border-primary/40 hover:bg-accent'
+                                                <button type='button' className='mt-2 flex w-full cursor-pointer items-center gap-3 rounded-2xl border border-border-button-default bg-background-full p-3 text-left transition-colors hover:bg-background-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus-ring'
                                                     onClick={() => {
                                                         if (selectPaymentMethod) {
                                                             selectPaymentMethod(method)
@@ -120,15 +121,18 @@ const PaymentOption = () => {
                                                         }
                                                     }}
                                                 >
-                                                    <img src={method.icon} alt={method.name} className='w-12 shrink-0' />
-                                                    <div className='min-w-0 flex-1'>
-                                                        <h3 className='text-sm font-semibold'>{method.name} ({method.excerpt})</h3>
-                                                        <p className='text-xs text-muted-foreground'>{method.description}</p>
-                                                    </div>
-                                                    <div className='flex shrink-0 justify-end'>
-                                                        <ChevronRightIcon className='h-4 w-4 text-muted-foreground' />
-                                                    </div>
-                                                </div>
+                                                    <PaymentMark method={method} />
+                                                    <span className='min-w-0 flex-1'>
+                                                        <span className='block text-sm font-semibold'>
+                                                            {method.name}
+                                                            {method.excerpt && method.excerpt !== method.name ? ` (${method.excerpt})` : ''}
+                                                        </span>
+                                                        {method.description && method.description !== method.name && (
+                                                            <span className='block text-xs text-muted-foreground'>{method.description}</span>
+                                                        )}
+                                                    </span>
+                                                    <ChevronRightIcon className='h-4 w-4 shrink-0 text-muted-foreground' />
+                                                </button>
                                             </div>
                                         ))
                                 }

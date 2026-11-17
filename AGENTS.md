@@ -73,6 +73,8 @@ Build: `npm run build` (`next.config.ts` memakai `ignoreBuildErrors`, jadi **jal
 
 UI memakai **BoardUI** (Tailwind v4 + React Aria, komponen disalin ke `components/base/*`), diberi warna merek merah dan font Plus Jakarta Sans. **Baca `DESIGN.md` sebelum mengubah UI**; aturan BoardUI untuk agen ada di bagian "BoardUI" di bawah berkas ini.
 Halaman lama memanggil API shadcn lewat `components/ui/*` yang sekarang hanyalah lapisan kompatibilitas di atas BoardUI (button, input, dialog→Modal/Drawer, tabs, badge→Chip, toast). Kode baru: pakai langsung `components/base/*`.
+Logo kurir di `public/images/couriers/` (jne.png, jnt.svg, jnt-cargo.png), dipetakan di `components/courier-options.tsx` (`courierLogo`); kurir tanpa logo tampil singkatan. Logo adalah merek dagang masing-masing kurir, dipakai hanya untuk mengenali kurir.
+Logo pembayaran di `public/images/payments/` (bca, bni, mandiri, bri, permata, qris), dipilih dari `method.key` di `components/payment-mark.tsx` bila API hanya mengirim ikon placeholder; transfer manual dan bayar di toko memakai ikon bank/kartu. ShopeePay belum punya logo (tampil singkatan).
 Komponen kustom: `components/checkout/section.tsx` (langkah bernomor), `components/cart/recommendations.tsx`.
 Cara menambah komponen: `BOARDUI_TELEMETRY_DISABLED=1 npx boardui@latest add <nama> --yes` (CLI menulis berkas dan memasang dependensi; periksa `git status` sesudahnya). Hanya komponen gratis yang dipakai (jangan membeli/menyalin yang Pro).
 Dev server: Next 16 menyimpan output dev di `.next/dev`, jadi `npm run build` aman dijalankan selagi `npm run dev` hidup.

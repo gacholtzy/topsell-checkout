@@ -2,7 +2,7 @@
 import React from 'react'
 import { useShipping } from '../context/shipping'
 import { priceToIDR } from '../lib/helper'
-import { shippingOptionDuration, shippingOptionLabel } from '../interface/shipping'
+import { shippingOptionDuration } from '../interface/shipping'
 import { Skeleton } from './ui/skeleton'
 import { RadioGroup } from '@/components/base/radio/radio'
 import { RadioCard } from '@/components/base/radio/radio-card'
@@ -14,6 +14,42 @@ import { Chip } from '@/components/base/badges/chip'
  * what came back, cheapest first, and lets the customer pick one.
  */
 const keyOf = (o: { courierCode: string; courierServiceCode: string }) => `${o.courierCode}|${o.courierServiceCode}`
+
+/**
+ * The courier's logo, picked from what Biteship calls it. JNE Trucking and the
+ * other JNE services share the JNE mark; J&T Cargo has its own. Couriers
+ * without a file here fall back to their initials.
+ */
+function courierLogo(o: { courierCode: string; courierServiceCode: string; courierServiceName: string }) {
+    const code = o.courierCode.toLowerCase()
+    const service = `${o.courierServiceCode} ${o.courierServiceName}`.toLowerCase()
+    if (code.includes('jne')) return '/images/couriers/jne.png'
+    if (code.includes('jnt') || code.includes('j&t')) {
+        return code.includes('cargo') || service.includes('cargo') ? '/images/couriers/jnt-cargo.png' : '/images/couriers/jnt.svg'
+    }
+    return null
+}
+
+/** "JNE" + "JNE Trucking" reads "JNE JNE Trucking"; say it once. */
+function courierText(o: { courierName: string; courierServiceName: string }) {
+    const name = (o.courierName || '').trim()
+    const service = (o.courierServiceName || '').trim()
+    return service.toLowerCase().startsWith(name.toLowerCase()) ? service : [name, service].filter(Boolean).join(' ')
+}
+
+function CourierMark({ option }: { option: { courierCode: string; courierName: string; courierServiceCode: string; courierServiceName: string } }) {
+    const src = courierLogo(option)
+    return (
+        <span className='flex h-9 w-14 shrink-0 items-center justify-center rounded-lg border border-border-button-default bg-background-full p-1.5' aria-hidden='true'>
+            {src ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={src} alt='' loading='lazy' decoding='async' className='max-h-full max-w-full object-contain' />
+            ) : (
+                <span className='text-caption-1-semibold text-text-secondary'>{(option.courierName || '?').slice(0, 3).toUpperCase()}</span>
+            )}
+        </span>
+    )
+}
 
 const CourierOptions = () => {
     const { shippingOptions, shippingOptionsLoading, shippingOptionsError, selectedShippingOption, selectShippingOption } = useShipping()
@@ -52,10 +88,13 @@ const CourierOptions = () => {
                             key={keyOf(option)}
                             value={keyOf(option)}
                             title={
-                                <span className='flex min-w-0 items-baseline justify-between gap-3'>
-                                    <span className='truncate'>{shippingOptionLabel(option)}</span>
+                                <span className='flex min-w-0 items-center gap-3'>
+                                    <CourierMark option={option} />
+                                    <span className='flex min-w-0 flex-1 items-baseline justify-between gap-3'>
+                                    <span className='truncate'>{courierText(option)}</span>
                                     <span className='shrink-0 tabular-nums'>
                                         {option.price > 0 ? priceToIDR(option.price) : <Chip variant='caption' color='lime'>Gratis</Chip>}
+                                    </span>
                                     </span>
                                 </span>
                             }
