@@ -86,12 +86,12 @@ export async function addItemsToCart(items: CartItemCreate[], token: string) {
   }
 
   const results = [];
-  
+
   for (const item of items) {
     const result = await addItemToCart(item, token);
     results.push(result);
   }
-  
+
   return results;
 }
 
@@ -181,7 +181,7 @@ export async function removeCartItem(itemId: string, token: string) {
   // Ensure itemId is properly encoded in the URL
   const encodedItemId = encodeURIComponent(itemId);
   const apiUrl = `/api/cart/items/${encodedItemId}`;
-  
+
   console.log("removeCartItem: Sending DELETE request", { itemId, encodedItemId, apiUrl });
 
   const response = await fetch(apiUrl, {
@@ -233,7 +233,7 @@ export async function clearCart(token: string) {
  */
 export function ensureAuthenticated(redirectPath?: string) {
   const { isAuthenticated } = useAuthStore.getState();
-  
+
   if (!isAuthenticated) {
     // Handle client-side navigation
     if (typeof window !== 'undefined') {
@@ -242,6 +242,6 @@ export function ensureAuthenticated(redirectPath?: string) {
     }
     return false;
   }
-  
+
   return true;
 } 

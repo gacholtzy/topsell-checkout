@@ -2,8 +2,9 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { Clock } from 'lucide-react'
-import { Button } from './ui/button'
+import { RiArrowRightLine, RiTimeLine } from '@remixicon/react'
+import { buttonStyles } from '@/components/base/buttons/button'
+import { cx } from '@/utils/cx'
 import type { Order } from '@/lib/order-utils'
 
 import { formatCountdown, remainingSeconds } from '@/lib/payment-countdown'
@@ -35,31 +36,57 @@ const PaymentPanel = ({ order, loadedAt }: { order: Order; loadedAt: number }) =
 
     if (!payUrl && !hasDeadline) return null
 
-    return (
-        <div className="rounded-lg bg-warning-soft px-4 py-3 text-sm">
-            {hasDeadline && !expired && (
-                <div className="flex flex-wrap items-center gap-2 text-warning">
-                    <Clock className="h-4 w-4" />
-                    <span>Selesaikan pembayaran dalam</span>
-                    <span className="text-lg font-extrabold tabular-nums">{formatCountdown(remaining!)}</span>
-                </div>
-            )}
+    const payButtonClass = cx(
+        buttonStyles.base,
+        buttonStyles.size.medium,
+        buttonStyles.variant.primary,
+        'min-h-11 w-full shrink-0 sm:min-h-9 sm:w-auto'
+    )
 
-            {expired && (
-                <p className="font-medium text-destructive">
-                    Waktu pembayaran habis. Pesanan ini akan segera kedaluwarsa, silakan buat pesanan baru.
-                </p>
+    return (
+        <div
+            className={cx(
+                'flex flex-col gap-3 rounded-2xl px-4 py-3 sm:flex-row sm:items-center sm:justify-between',
+                expired ? 'bg-status-rose-background' : 'bg-status-yellow-background'
             )}
+        >
+            <div className="min-w-0">
+                {hasDeadline && !expired && (
+                    <div className="flex flex-wrap items-center gap-1.5 text-status-yellow-text">
+                        <RiTimeLine className="size-4 shrink-0" aria-hidden />
+                        <span className="text-body-regular">Selesaikan dalam</span>
+                        <span className="text-body-medium font-semibold tabular-nums" dir="ltr">
+                            {formatCountdown(remaining!)}
+                        </span>
+                    </div>
+                )}
+
+                {expired && (
+                    <p className="text-body-medium text-status-rose-text">
+                        Waktu pembayaran habis. Pesanan ini akan segera kedaluwarsa, silakan buat pesanan baru.
+                    </p>
+                )}
+
+                {!hasDeadline && payUrl && (
+                    <p className="text-body-regular text-status-yellow-text">
+                        Menunggu pembayaran diselesaikan.
+                    </p>
+                )}
+            </div>
 
             {/* Gone once the time is up: the Snap page behind it would only say expired. */}
             {payUrl && !expired && (
-                <Button asChild className="mt-3 w-full font-bold sm:w-auto">
-                    {isManual ? (
-                        <Link href={payUrl}>Bayar sekarang</Link>
-                    ) : (
-                        <a href={payUrl}>Bayar sekarang</a>
-                    )}
-                </Button>
+                isManual ? (
+                    <Link href={payUrl} className={payButtonClass}>
+                        <span className={buttonStyles.label.medium}>Bayar sekarang</span>
+                        <RiArrowRightLine className={buttonStyles.icon.medium} aria-hidden />
+                    </Link>
+                ) : (
+                    <a href={payUrl} className={payButtonClass}>
+                        <span className={buttonStyles.label.medium}>Bayar sekarang</span>
+                        <RiArrowRightLine className={buttonStyles.icon.medium} aria-hidden />
+                    </a>
+                )
             )}
         </div>
     )
