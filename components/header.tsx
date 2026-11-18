@@ -71,7 +71,7 @@ const AppHeader = () => {
 
     return (
         <div className="border-b border-border-button-default bg-background-full">
-            <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
                 <header className="flex h-14 items-center justify-between sm:h-16">
                     <Link href="https://topsellbelanja.com/" aria-label="Topsell Belanja">
                         <img src="/images/logo.webp" alt="Topsell Belanja" className='h-8 w-auto sm:h-10' />

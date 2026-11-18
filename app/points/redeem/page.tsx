@@ -98,7 +98,7 @@ const RedeemPage = () => {
 
   if (loading) {
     return (
-      <div className="container mx-auto max-w-5xl px-4 py-8">
+      <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
         <div className="flex justify-center items-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
         </div>
@@ -108,7 +108,7 @@ const RedeemPage = () => {
 
   if (error) {
     return (
-      <div className="container mx-auto max-w-5xl px-4 py-8">
+      <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
         <div className="text-center py-12">
           <XCircle className="h-12 w-12 mx-auto mb-4 text-primary" />
           <p className="text-primary mb-4">{error}</p>
@@ -121,7 +121,7 @@ const RedeemPage = () => {
   const activePoints = balance?.activePoints ?? 0
 
   return (
-    <div className="container mx-auto max-w-5xl px-4 py-8">
+    <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
       <div className="mb-6 flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3">
           <Link href="/points">

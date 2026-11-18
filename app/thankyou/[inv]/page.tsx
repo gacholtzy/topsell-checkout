@@ -41,7 +41,7 @@ const ThankYouPage = () => {
     const isPickup = order?.shipping.title == "Ambil di Toko"
 
     return (
-        <div className='mx-auto max-w-2xl px-4 pb-16 pt-6 sm:px-6 sm:pt-10'>
+        <div className='mx-auto max-w-[1200px] px-4 pb-16 pt-6 sm:px-6 sm:pt-10'>
             {isLoading ? (
                 <div className="flex justify-center py-16" role="status" aria-label="Memuat pesanan">
                     <span className="h-8 w-8 animate-spin rounded-full border-2 border-foreground border-t-transparent" />

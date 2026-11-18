@@ -110,7 +110,7 @@ const TrackingPage = () => {
     }[tone]
 
     return (
-        <div className="mx-auto max-w-2xl px-4 pb-16 pt-5 sm:px-6 sm:pt-8">
+        <div className="mx-auto max-w-[1200px] px-4 pb-16 pt-5 sm:px-6 sm:pt-8">
             <div className="mb-5 flex items-center justify-between gap-3">
                 <Button variant="ghost" size="sm" onClick={() => router.push('/order')} className="-ml-3">
                     <ArrowLeftIcon /> Pesanan

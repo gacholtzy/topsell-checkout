@@ -321,7 +321,7 @@ const StorePage = () => {
     )
 
     return (
-        <div className='mx-auto max-w-6xl px-4 pb-32 pt-5 sm:px-6 sm:pt-8 lg:pb-12'>
+        <div className='mx-auto max-w-[1200px] px-4 pb-32 pt-5 sm:px-6 sm:pt-8 lg:pb-12'>
             <AuthModal open={showAuthModal} onAuthenticated={handleAuthenticated} onClose={() => setShowAuthModal(false)} />
 
             <Breadcrumb aria-label="Langkah belanja" className="mb-4">
@@ -402,7 +402,7 @@ const StorePage = () => {
 
             {/* Phone: the total and the button stay in reach while the form scrolls. */}
             <div className='fixed inset-x-0 bottom-0 z-30 border-t border-border-button-default bg-background-full px-4 pb-safe pt-3 shadow-lg lg:hidden'>
-                <div className='mx-auto flex max-w-6xl flex-col gap-2 pb-3 min-[400px]:flex-row min-[400px]:items-center min-[400px]:gap-4'>
+                <div className='mx-auto flex max-w-[1200px] flex-col gap-2 pb-3 min-[400px]:flex-row min-[400px]:items-center min-[400px]:gap-4'>
                     <div className='min-w-0 flex-1'>
                         <p className='text-caption-1-regular text-text-secondary'>Total bayar</p>
                         <p className='truncate text-headline-semibold tabular-nums text-text-primary'>{priceToIDR(grandTotal || 0)}</p>

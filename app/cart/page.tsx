@@ -406,7 +406,7 @@ export default function CartPage() {
     return (
       <>
         {authModal}
-        <div className="mx-auto max-w-6xl px-4 pt-5 sm:px-6 sm:pt-8" role="status" aria-label="Memuat keranjang">
+        <div className="mx-auto max-w-[1200px] px-4 pt-5 sm:px-6 sm:pt-8" role="status" aria-label="Memuat keranjang">
           <Skeleton className="mb-6 h-9 w-48" />
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-10">
             <div className="divide-y divide-border-button-default rounded-3xl border border-border-button-default">
@@ -432,7 +432,7 @@ export default function CartPage() {
     return (
       <>
         {authModal}
-        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+        <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
           <h1 className="mb-6 text-2xl font-extrabold tracking-tight sm:text-3xl">Keranjang</h1>
           <div className="rounded-3xl border border-border-button-default bg-background-full px-6 py-12 text-center">
             <h2 className="text-lg font-bold">
@@ -465,7 +465,7 @@ export default function CartPage() {
   return (
     <>
       {authModal}
-      <div className="mx-auto max-w-6xl px-4 pb-32 pt-5 sm:px-6 sm:pt-8 lg:pb-12">
+      <div className="mx-auto max-w-[1200px] px-4 pb-32 pt-5 sm:px-6 sm:pt-8 lg:pb-12">
         <div className="mb-6 flex items-end justify-between gap-4">
           <h1 className="text-title-1-semibold text-text-primary sm:text-display-4-semibold">
             Keranjang <span className="text-headline-medium text-text-secondary">({cart.items.length})</span>
@@ -606,7 +606,7 @@ export default function CartPage() {
 
       {/* Phone: total and the way forward stay in reach. */}
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border-button-default bg-background-full px-4 pb-safe pt-3 shadow-lg lg:hidden">
-        <div className="mx-auto flex max-w-6xl flex-col gap-2 pb-3 min-[400px]:flex-row min-[400px]:items-center min-[400px]:gap-4">
+        <div className="mx-auto flex max-w-[1200px] flex-col gap-2 pb-3 min-[400px]:flex-row min-[400px]:items-center min-[400px]:gap-4">
           <div className="min-w-0 flex-1">
             <p className="text-xs text-muted-foreground">{selectedCount} barang dipilih</p>
             <p className="truncate text-lg font-extrabold tabular-nums">{priceToIDR(selectedTotal)}</p>

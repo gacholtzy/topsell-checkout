@@ -82,7 +82,7 @@ const PointsPage = () => {
 
   if (loading) {
     return (
-      <div className="container mx-auto max-w-4xl px-4 py-8">
+      <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
         <div className="flex justify-center items-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
         </div>
@@ -92,7 +92,7 @@ const PointsPage = () => {
 
   if (error) {
     return (
-      <div className="container mx-auto max-w-4xl px-4 py-8">
+      <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
         <div className="text-center py-12">
           <XCircle className="h-12 w-12 mx-auto mb-4 text-primary" />
           <p className="text-primary mb-4">{error}</p>
@@ -103,7 +103,7 @@ const PointsPage = () => {
   }
 
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-8">
+    <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
       <div className="mb-8 flex items-center justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-3xl font-bold text-foreground mb-2">Poin Saya</h1>

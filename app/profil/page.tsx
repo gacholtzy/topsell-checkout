@@ -192,7 +192,7 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto max-w-2xl px-6 py-8">
+      <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
@@ -205,7 +205,7 @@ export default function ProfilePage() {
 
   if (!userProfile) {
     return (
-      <div className="container mx-auto max-w-2xl px-6 py-8">
+      <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
         <div className="text-center">
           <p className="text-muted-foreground">Tidak dapat memuat data profil</p>
         </div>
@@ -214,7 +214,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="container mx-auto max-w-2xl px-6 py-8">
+    <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
       <div className="space-y-6">
 
         {/* Points summary card */}

@@ -41,7 +41,7 @@ const VoucherSayaPage = () => {
   }, [token])
 
   return (
-    <div className="container mx-auto max-w-5xl px-4 py-8">
+    <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
       <div className="mb-6 flex items-center gap-3">
         <Link href="/points">
           <Button variant="ghost" size="icon"><ArrowLeft className="h-5 w-5" /></Button>
