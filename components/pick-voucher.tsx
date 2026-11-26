@@ -65,6 +65,29 @@ const PickVoucher = () => {
     const hasNonCancellableAutoApplyVoucher = selectedVoucher?.isAutoApply && !selectedVoucher?.isCancellable
     const hasNonCancellableAutoApplyShippingVoucher = selectedShippingVoucher?.isAutoApply && !selectedShippingVoucher?.isCancellable
 
+    const isVoucherUsable = (v: Voucher) =>
+        Boolean(v.isEligible) &&
+        (!v.paymentMethodIDs ||
+            v.paymentMethodIDs.length === 0 ||
+            v.paymentMethodIDs.some((pm) => pm.paymentMethodID === selectedPaymentMethod?.id))
+
+    const usableMainCount = vouchers.filter(isVoucherUsable).length
+    const usableShippingCount = shippingVouchers.filter(isVoucherUsable).length
+
+    const voucherHint = (() => {
+        if (!selectedVoucher && !selectedShippingVoucher) {
+            const total = usableMainCount + usableShippingCount
+            return total > 0 ? `Ada ${total} voucher yang bisa digunakan` : null
+        }
+        if (selectedVoucher && !selectedShippingVoucher && usableShippingCount > 0) {
+            return `Ada ${usableShippingCount} voucher lagi bisa digunakan`
+        }
+        if (!selectedVoucher && selectedShippingVoucher && usableMainCount > 0) {
+            return `Ada ${usableMainCount} voucher lagi bisa digunakan`
+        }
+        return null
+    })()
+
     return (
         <>
             <Dialog
@@ -86,22 +109,29 @@ const PickVoucher = () => {
                         }
                     }
                     className='w-full min-h-14 cursor-pointer rounded-lg border border-input bg-card p-3.5 flex items-center justify-between gap-3 text-sm font-semibold transition-colors hover:bg-secondary'>
-                    <div className="flex items-center">
+                    <div className="flex min-w-0 items-center">
                         <TicketIcon className='mr-3 h-5 w-5 shrink-0 text-primary' />
-                        {
-                            selectedVoucher && selectedShippingVoucher ? (
-                                <div className='flex items-start flex-col'>
-                                    <div className='text-sm font-semibold'>{selectedVoucher.name}</div>
-                                    <div className='text-sm font-semibold'>{selectedShippingVoucher.name}</div>
-                                </div>
-                            ) : selectedVoucher ? (
-                                selectedVoucher.name
-                            ) : selectedShippingVoucher ? (
-                                selectedShippingVoucher.name
-                            ) : (
-                                <span className='text-muted-foreground'>Pakai voucher</span>
-                            )
-                        }
+                        <div className='flex min-w-0 flex-col items-start'>
+                            {
+                                selectedVoucher && selectedShippingVoucher ? (
+                                    <>
+                                        <div className='text-sm font-semibold'>{selectedVoucher.name}</div>
+                                        <div className='text-sm font-semibold'>{selectedShippingVoucher.name}</div>
+                                    </>
+                                ) : selectedVoucher ? (
+                                    <div>{selectedVoucher.name}</div>
+                                ) : selectedShippingVoucher ? (
+                                    <div>{selectedShippingVoucher.name}</div>
+                                ) : (
+                                    <span className='text-muted-foreground'>Pakai voucher</span>
+                                )
+                            }
+                            {voucherHint && (
+                                <span className='mt-0.5 text-xs font-medium text-status-lime-text'>
+                                    {voucherHint}
+                                </span>
+                            )}
+                        </div>
                     </div>
                     <span className="shrink-0 text-sm font-semibold text-primary underline underline-offset-4">{selectedVoucher || selectedShippingVoucher ? "Ganti" : "Pilih"}</span>
                 </div>) : (
